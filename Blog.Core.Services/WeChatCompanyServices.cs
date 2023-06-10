@@ -20,11 +20,9 @@ namespace Blog.Core.Services
     public class WeChatCompanyServices : BaseServices<WeChatCompany>, IWeChatCompanyServices
     {
         readonly IUnitOfWorkManage _unitOfWorkManage;
-        readonly ILogger<WeChatCompanyServices> _logger;
-        public WeChatCompanyServices(IUnitOfWorkManage unitOfWorkManage, ILogger<WeChatCompanyServices> logger)
+        public WeChatCompanyServices(IUnitOfWorkManage unitOfWorkManage)
         {
             this._unitOfWorkManage = unitOfWorkManage;
-            this._logger = logger;
         }  
         
     }

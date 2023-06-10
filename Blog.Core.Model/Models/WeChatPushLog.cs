@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using Blog.Core.Model.Models.RootTkey;
 using SqlSugar;
 
 namespace Blog.Core.Model.Models
@@ -9,14 +10,8 @@ namespace Blog.Core.Model.Models
     ///
     ///</summary>
     [SugarTable("WeChatPushLog")]
-    public partial class WeChatPushLog
+    public partial class WeChatPushLog: BaseEntity
     {
-
-        /// <summary>
-        /// 推送ID
-        /// </summary>
-        [SugarColumn(IsPrimaryKey = true,IsNullable = false)]
-        public string id { get; set; } 
         /// <summary>
         /// 来自谁
         /// </summary>
@@ -82,35 +77,5 @@ namespace Blog.Core.Model.Models
         /// </summary>
         [SugarColumn(Length = 100, IsNullable = false)]
         public string PushLogPublicAccount { get; set; }
-        /// <summary>
-        /// 创建者id
-        /// </summary>
-        [SugarColumn(IsNullable = true)]
-        public int? CreateId { get; set; }
-        /// <summary>
-        /// 创建人
-        /// </summary>
-        [SugarColumn(IsNullable = true)]
-        public string CreateBy { get; set; }
-        /// <summary>
-        /// 创建时间
-        /// </summary>
-        [SugarColumn(IsNullable = true)]
-        public DateTime? CreateTime { get; set; }
-        /// <summary>
-        /// 修改者id
-        /// </summary>
-        [SugarColumn(IsNullable = true)]
-        public int? ModifyId { get; set; }
-        /// <summary>
-        /// 修改人
-        /// </summary>
-        [SugarColumn(IsNullable = true)]
-        public string ModifyBy { get; set; }
-        /// <summary>
-        /// 修改时间
-        /// </summary>
-        [SugarColumn(IsNullable = true)]
-        public DateTime? ModifyTime { get; set; }
     }
 }

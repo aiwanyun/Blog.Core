@@ -238,8 +238,10 @@ namespace Blog.Core.Common.Helper
         /// <returns>返回token</returns>
         public async static Task<WeChatApiDto> GetToken(string appid, string appsecret)
         { 
-            string url = $"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={appid}&secret={appsecret}";
-            var txt = await HttpHelper.GetAsync(url);
+            string url = $"https://api.weixin.qq.com/cgi-bin/stable_token";
+
+            WeChatToken weChatToken = new WeChatToken { appid = appid, secret = appsecret, grant_type = "client_credential" };
+            var txt = await HttpHelper.PostAsync(url, JsonHelper.GetJSON<WeChatToken>(weChatToken));
             var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
             return data;
         }
@@ -307,4 +309,13 @@ namespace Blog.Core.Common.Helper
             return data;
         } 
     }
+    public class WeChatToken { 
+        public string grant_type { get; set; }
+        public string appid { get; set; }
+        public string secret { get; set; }
+
+        public bool force_refresh { get; set; } = false;
+        
+    }
+
 }

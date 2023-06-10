@@ -14,16 +14,13 @@ namespace Blog.Core.Controllers
     [Authorize(Permissions.Name)]
     public class PayController : Controller
     { 
-        private readonly ILogger<PayController> _logger;
         private readonly IPayServices _payServices;
         /// <summary>
         /// 构造函数
         /// </summary> 
-        /// <param name="logger"></param>
         /// <param name="payServices"></param>
-        public PayController(ILogger<PayController> logger, IPayServices payServices)
+        public PayController(IPayServices payServices)
         { 
-            _logger = logger;
             _payServices = payServices;
         }
         /// <summary>

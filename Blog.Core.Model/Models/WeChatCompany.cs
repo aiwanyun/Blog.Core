@@ -45,7 +45,7 @@ namespace Blog.Core.Model.Models
         /// 创建者id
         /// </summary>
         [SugarColumn(IsNullable = true)]
-        public int? CreateId { get; set; }
+        public long? CreateId { get; set; }
         /// <summary>
         /// 创建人
         /// </summary>
@@ -60,7 +60,7 @@ namespace Blog.Core.Model.Models
         /// 修改者id
         /// </summary>
         [SugarColumn(IsNullable = true)]
-        public int? ModifyId { get; set; }
+        public long? ModifyId { get; set; }
         /// <summary>
         /// 修改人
         /// </summary>

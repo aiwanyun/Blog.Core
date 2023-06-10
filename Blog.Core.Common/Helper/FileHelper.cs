@@ -282,7 +282,7 @@ namespace Blog.Core.Common.Helper
         /// <param name="Path">路径</param>
         public static void FileDel(string Path)
         {
-            File.Delete(Path);
+            if (File.Exists(Path)) File.Delete(Path);
         }
         #endregion
 

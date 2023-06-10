@@ -22,7 +22,7 @@ public static class SerilogSetup
             .ReadFrom.Configuration(AppSettings.Configuration)
             .Enrich.FromLogContext()
             //输出到控制台
-            .WriteToConsole()
+            //.WriteToConsole()
             //将日志保存到文件中
             .WriteToFile()
             //配置日志库

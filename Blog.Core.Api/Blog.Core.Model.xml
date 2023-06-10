@@ -571,6 +571,211 @@
             修改时间
             </summary>
         </member>
+        <member name="T:Blog.Core.Model.Models.Nightscout">
+            <summary>
+            血糖管理实例
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.url">
+            <summary>
+            访问地址
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.tel">
+            <summary>
+            电话
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.passwd">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.backupurl">
+            <summary>
+            访问地址
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.startTime">
+            <summary>
+            开始时间
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.endTime">
+            <summary>
+            结束时间
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.isRefresh">
+            <summary>
+            是否刷新
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.isConnection">
+            <summary>
+            是否接入
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.isKeepPush">
+            <summary>
+            是否持续推送血糖(要开启isConnection)
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.serviceName">
+            <summary>
+            服务名称
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.instanceIP">
+            <summary>
+            实例ID
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.resource">
+            <summary>
+            来源
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.isBindWeChat">
+            <summary>
+            是否绑定
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.plugins">
+            <summary>
+            启用插件
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.serverId">
+            <summary>
+            关联服务器id
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.exposedPort">
+            <summary>
+            暴露外网端口
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.serviceSerial">
+            <summary>
+            当前服务序列
+            </summary>
+        </member>
+        <member name="T:Blog.Core.Model.Models.NightscoutLog">
+            <summary>
+            血糖管理实例日志
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutLog.pid">
+            <summary>
+            血糖实例父级ID
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutLog.content">
+            <summary>
+            运行日志
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutLog.success">
+            <summary>
+            是否运行成功
+            </summary>
+        </member>
+        <member name="T:Blog.Core.Model.Models.NightscoutServer">
+            <summary>
+            血糖服务器
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutServer.serverName">
+            <summary>
+            服务器名称
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutServer.serverIp">
+            <summary>
+            服务器地址
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutServer.serverPort">
+            <summary>
+            服务器端口
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutServer.curInstanceIp">
+            <summary>
+            当前实例IP
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutServer.curInstanceIpSerial">
+            <summary>
+            当前IP序列
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutServer.instanceIpTemplate">
+            <summary>
+            实例模板ip
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutServer.curExposedPort">
+            <summary>
+            当前暴露端口(服务器IP+暴露端口)(如果为0则为实例IP+1337)
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutServer.curServiceSerial">
+            <summary>
+            当前服务序列
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutServer.mongoIp">
+            <summary>
+            MongoDB数据库
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutServer.mongoPort">
+            <summary>
+            MongoDB端口
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutServer.mongoLoginName">
+            <summary>
+            mongo登录账号
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutServer.mongoLoginPassword">
+            <summary>
+            mongo登录密码
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutServer.remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutServer.isMaster">
+            <summary>
+            是否为主节点(nginx刷新用到)
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutServer.count">
+            <summary>
+            统计数量
+            </summary>
+        </member>
         <member name="T:Blog.Core.Model.Models.OperateLog">
             <summary>
             日志记录
@@ -1260,6 +1465,76 @@
             Tibug 博文
             </summary>
         </member>
+        <member name="T:Blog.Core.Model.Models.TrojanCusServers">
+            <summary>
+            users自定义服务器
+            </summary>
+        </member>
+        <member name="T:Blog.Core.Model.Models.TrojanDetails">
+            <summary>
+            用户流量每月汇总表
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.TrojanDetails.id">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.TrojanDetails.userId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.TrojanDetails.calDate">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.TrojanDetails.download">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.TrojanDetails.upload">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.TrojanDetails.CreateId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.TrojanDetails.CreateBy">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.TrojanDetails.CreateTime">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Blog.Core.Model.Models.TrojanServers">
+            <summary>
+            Trojan服务器
+            </summary>
+        </member>
+        <member name="T:Blog.Core.Model.Models.TrojanUrlServers">
+            <summary>
+            users自定义URL服务器
+            </summary>
+        </member>
+        <member name="T:Blog.Core.Model.Models.TrojanUsers">
+            <summary>
+            Trojan用户
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.TrojanUsers.useList">
+            <summary>
+            历史流量记录
+            </summary>
+        </member>
         <member name="T:Blog.Core.Model.Models.UserRole">
             <summary>
             用户跟角色关联表
@@ -1460,11 +1735,6 @@
             
             </summary>
         </member>
-        <member name="P:Blog.Core.Model.Models.WeChatPushLog.id">
-            <summary>
-            推送ID
-            </summary>
-        </member>
         <member name="P:Blog.Core.Model.Models.WeChatPushLog.PushLogFrom">
             <summary>
             来自谁
@@ -1518,36 +1788,6 @@
         <member name="P:Blog.Core.Model.Models.WeChatPushLog.PushLogPublicAccount">
             <summary>
             推送微信公众号
-            </summary>
-        </member>
-        <member name="P:Blog.Core.Model.Models.WeChatPushLog.CreateId">
-            <summary>
-            创建者id
-            </summary>
-        </member>
-        <member name="P:Blog.Core.Model.Models.WeChatPushLog.CreateBy">
-            <summary>
-            创建人
-            </summary>
-        </member>
-        <member name="P:Blog.Core.Model.Models.WeChatPushLog.CreateTime">
-            <summary>
-            创建时间
-            </summary>
-        </member>
-        <member name="P:Blog.Core.Model.Models.WeChatPushLog.ModifyId">
-            <summary>
-            修改者id
-            </summary>
-        </member>
-        <member name="P:Blog.Core.Model.Models.WeChatPushLog.ModifyBy">
-            <summary>
-            修改人
-            </summary>
-        </member>
-        <member name="P:Blog.Core.Model.Models.WeChatPushLog.ModifyTime">
-            <summary>
-            修改时间
             </summary>
         </member>
         <member name="T:Blog.Core.Model.Models.WeChatQR">
@@ -2720,6 +2960,73 @@
         <member name="P:Blog.Core.Model.ViewModels.TopgbViewModels.btitle">
             <summary>博客标题
             
+            </summary>
+        </member>
+        <member name="T:Blog.Core.Model.ViewModels.TrojanLimitFlowDto">
+            <summary>
+            限制流量dto
+            作者:胡丁文
+            时间:2020-4-27 16:57:07
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.ViewModels.TrojanLimitFlowDto.users">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.ViewModels.TrojanLimitFlowDto.quota">
+            <summary>
+            流量(-1为无限,单位为最小单位byte)
+            </summary>
+        </member>
+        <member name="T:Blog.Core.Model.ViewModels.TrojanServerSpliceDto">
+            <summary>
+            Trojan服务器拼接服务器和订阅地址
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.ViewModels.TrojanServerSpliceDto.normalApi">
+            <summary>
+            普通订阅连接
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.ViewModels.TrojanServerSpliceDto.clashApi">
+            <summary>
+            clash订阅连接
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.ViewModels.TrojanServerSpliceDto.clashApiBackup">
+            <summary>
+            备用clash订阅连接
+            </summary>
+        </member>
+        <member name="T:Blog.Core.Model.ViewModels.TrojanUseDetailDto">
+            <summary>
+            Trojan用户流量统计分组
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.ViewModels.TrojanUseDetailDto.userId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.ViewModels.TrojanUseDetailDto.moth">
+            <summary>
+            月度
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.ViewModels.TrojanUseDetailDto.up">
+            <summary>
+            上传流量
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.ViewModels.TrojanUseDetailDto.down">
+            <summary>
+            下载流量
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.ViewModels.TrojanUseDetailDto.total">
+            <summary>
+            下载流量
             </summary>
         </member>
         <member name="T:Blog.Core.Model.ViewModels.WeChatApiDto">

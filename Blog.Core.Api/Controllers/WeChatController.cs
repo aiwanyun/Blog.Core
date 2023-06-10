@@ -15,7 +15,6 @@ namespace Blog.Core.Controllers
     public partial class WeChatController : Controller
     {
         readonly IWeChatConfigServices _weChatConfigServices;
-        readonly ILogger<WeChatController> _logger; 
         /// <summary>
         /// 构造函数
         /// </summary>  
@@ -24,7 +23,6 @@ namespace Blog.Core.Controllers
         public WeChatController(IWeChatConfigServices weChatConfigServices, ILogger<WeChatController> logger)
         {
             _weChatConfigServices = weChatConfigServices;
-            _logger = logger; 
         }
         /// <summary>
         /// 更新Token

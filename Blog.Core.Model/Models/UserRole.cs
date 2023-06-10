@@ -46,7 +46,7 @@ namespace Blog.Core.Model.Models
         /// 修改ID
         /// </summary>
         [SugarColumn(IsNullable = true)]
-        public int? ModifyId { get; set; }
+        public long? ModifyId { get; set; }
         /// <summary>
         /// 修改者
         /// </summary>

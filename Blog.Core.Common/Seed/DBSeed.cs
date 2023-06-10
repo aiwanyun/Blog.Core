@@ -346,6 +346,46 @@ namespace Blog.Core.Common.Seed
 
                     #endregion
 
+                    #region Nightscout
+
+                    if (!await myContext.Db.Queryable<Nightscout>().AnyAsync())
+                    {
+                        Console.WriteLine("Table:Nightscout created success!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Table:Nightscout already exists...");
+                    }
+
+                    #endregion
+
+                    #region NightscoutLog
+
+                    if (!await myContext.Db.Queryable<NightscoutLog>().AnyAsync())
+                    {
+                        Console.WriteLine("Table:NightscoutLog created success!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Table:NightscoutLog already exists...");
+                    }
+
+                    #endregion
+
+                    #region NightscoutServer
+
+                    if (!await myContext.Db.Queryable<NightscoutServer>().AnyAsync())
+                    {
+                        Console.WriteLine("Table:NightscoutServer created success!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Table:NightscoutServer already exists...");
+                    }
+
+                    #endregion
+
+                    
                     //种子初始化
                     await SeedDataAsync(myContext.Db);
 

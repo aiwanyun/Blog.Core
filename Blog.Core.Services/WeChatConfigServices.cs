@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blog.Core.Repository.UnitOfWorks;
+using System.Reflection;
+using Serilog;
 
 namespace Blog.Core.Services
 {
@@ -20,11 +22,11 @@ namespace Blog.Core.Services
     public class WeChatConfigServices : BaseServices<WeChatConfig>, IWeChatConfigServices
     {
         readonly IUnitOfWorkManage _unitOfWorkManage;
-        readonly ILogger<WeChatConfigServices> _logger;
-        public WeChatConfigServices(IUnitOfWorkManage unitOfWorkManage, ILogger<WeChatConfigServices> logger)
+        readonly IWeChatSubServices _weChatSubServices;
+        public WeChatConfigServices(IUnitOfWorkManage unitOfWorkManage, ILogger<WeChatConfigServices> logger, IWeChatSubServices weChatSubServices)
         {
             this._unitOfWorkManage = unitOfWorkManage;
-            this._logger = logger;
+            _weChatSubServices = weChatSubServices;
         }  
         public async Task<MessageModel<WeChatApiDto>> GetToken(string publicAccount)
         { 
@@ -35,7 +37,7 @@ namespace Blog.Core.Services
                 //再次判断token在微信服务器是否正确
                 var wechatIP = await WeChatHelper.GetWechatIP(config.token);
                 if (wechatIP.errcode == 0)
-                    MessageModel<WeChatApiDto>.Success("", new WeChatApiDto { access_token = config.token });//还没过期,直接返回
+                    return MessageModel<WeChatApiDto>.Success("", new WeChatApiDto { access_token = config.token });//还没过期,直接返回
             }
             //过期了,重新获取
             var data = await WeChatHelper.GetToken(config.appid, config.appsecret);
@@ -141,18 +143,19 @@ namespace Blog.Core.Services
             string objReturn = null;
             try
             {
-                _logger.LogInformation("会话开始");
+                
+                Log.Logger.Information("会话开始");
                 if (string.IsNullOrEmpty(validDto.publicAccount)) throw new Exception("没有微信公众号唯一标识id数据");
                 var config = await QueryById(validDto.publicAccount);
                 if (config == null) throw new Exception($"公众号不存在=>{validDto.publicAccount}");
-                _logger.LogInformation(JsonHelper.GetJSON<WeChatValidDto>(validDto));
+                Log.Logger.Information(JsonHelper.GetJSON<WeChatValidDto>(validDto));
                 var token = config.interactiveToken;//验证用的token 和access_token不一样
                 string[] arrTmp = { token, validDto.timestamp, validDto.nonce };
                 Array.Sort(arrTmp);
                 string combineString = string.Join("", arrTmp);
                 string encryption = MD5Helper.Sha1(combineString).ToLower();
 
-                _logger.LogInformation(
+                Log.Logger.Information(
                     $"来自公众号:{validDto.publicAccount}\r\n" +
                     $"微信signature:{validDto.signature}\r\n" +
                     $"微信timestamp:{validDto.timestamp}\r\n" +
@@ -185,8 +188,8 @@ namespace Blog.Core.Services
             }
             catch (Exception ex)
             {
-                _logger.LogInformation($"会话出错(信息)=>\r\n{ex.Message}");
-                _logger.LogInformation($"会话出错(堆栈)=>\r\n{ex.StackTrace}");
+                Log.Logger.Information($"会话出错(信息)=>\r\n{ex.Message}");
+                Log.Logger.Information($"会话出错(堆栈)=>\r\n{ex.StackTrace}");
                 //返回错误给用户 
                 objReturn = string.Format(@$"<xml><ToUserName><![CDATA[{weChatData?.FromUserName}]]></ToUserName>
                                                     <FromUserName><![CDATA[{weChatData?.ToUserName}]]></FromUserName>
@@ -196,10 +199,10 @@ namespace Blog.Core.Services
             }
             finally
             {
-                _logger.LogInformation($"微信get数据=>\r\n{JsonHelper.GetJSON<WeChatValidDto>(validDto)}");
-                _logger.LogInformation($"微信post数据=>\r\n{body}");
-                _logger.LogInformation($"返回微信数据=>\r\n{objReturn}");
-                _logger.LogInformation($"会话结束");
+                Log.Logger.Information($"微信get数据=>\r\n{JsonHelper.GetJSON<WeChatValidDto>(validDto)}");
+                Log.Logger.Information($"微信post数据=>\r\n{body}");
+                Log.Logger.Information($"返回微信数据=>\r\n{objReturn}");
+                Log.Logger.Information($"会话结束");
             }
             return objReturn;
         }
@@ -317,7 +320,7 @@ namespace Blog.Core.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogInformation($"记录失败\r\n{ex.Message}\r\n{ex.StackTrace}");
+                    Log.Logger.Information($"记录失败\r\n{ex.Message}\r\n{ex.StackTrace}");
                 }
                 if (reData.usersData.errcode.Equals(0))
                 {
@@ -709,6 +712,8 @@ namespace Blog.Core.Services
                     return await EventCLICK(weChat);
                 case "VIEW":
                     return await EventVIEW(weChat);
+                case "TEMPLATESENDJOBFINISH":
+                    return string.Empty;//暂不处理模板消息推送成功的回调消息
                 default:
                     return await Task.Run(() =>
                     {
@@ -727,7 +732,7 @@ namespace Blog.Core.Services
         /// <returns></returns>
         private async Task<string> EventSubscribe(WeChatXMLDto weChat)
         {
-            if (weChat.EventKey != null && (weChat.EventKey.Equals("bind") || weChat.EventKey.Equals("qrscene_bind")))
+            if (weChat.EventKey != null && weChat.EventKey.Contains("bind"))
             {
                 return await QRBind(weChat);
             }
@@ -750,8 +755,16 @@ namespace Blog.Core.Services
         /// <returns></returns>
         private async Task<string> EventUnsubscribe(WeChatXMLDto weChat)
         {
-            return await Task.Run(() =>
+            return await Task.Run(async () =>
             {
+                var data =await _weChatSubServices.Query(t => t.SubFromPublicAccount == weChat.publicAccount && t.SubUserOpenID == weChat.FromUserName && t.IsUnBind == false);
+                foreach (var item in data)
+                {
+                    item.IsUnBind = true;
+                    item.SubUserRefTime = DateTime.Now;
+                }
+                await BaseDal.Db.Updateable<WeChatSub>(data).UpdateColumns(t => new { t.IsUnBind, t.SubUserRefTime }).ExecuteCommandAsync();
+                Log.Logger.Information($"用户解绑成功:{weChat.publicAccount}=>{weChat.FromUserName}");
                 return @$"<xml><ToUserName><![CDATA[{weChat.FromUserName}]]></ToUserName>
                                 <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
                                 <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>
@@ -766,9 +779,8 @@ namespace Blog.Core.Services
         /// <returns></returns>
         private async Task<string> EventSCAN(WeChatXMLDto weChat)
         {
-            if (weChat.EventKey != null && (weChat.EventKey.StartsWith("bind_") || weChat.EventKey.StartsWith("qrscene_bind_")))
+            if (weChat.EventKey != null && weChat.EventKey.Contains("bind"))
             {
-
                 return await QRBind(weChat);
             }
             else
@@ -848,7 +860,7 @@ namespace Blog.Core.Services
                                 <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
                                 <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>
                                 <MsgType><![CDATA[text]]></MsgType>
-                                <Content><![CDATA[恭喜您:{(string.IsNullOrEmpty(ticket.QRbindJobNick) ? ticket.QRbindJobID : ticket.QRbindJobNick)},绑定成功!]]></Content></xml>";
+                                <Content><![CDATA[恭喜您！{(string.IsNullOrEmpty(ticket.QRbindJobNick) ? ticket.QRbindJobID : ticket.QRbindJobNick)}，绑定成功！]]></Content></xml>";
         }
         /// <summary>
         /// 上报位置地理事件

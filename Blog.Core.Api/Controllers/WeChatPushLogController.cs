@@ -30,7 +30,8 @@ namespace Blog.Core.Controllers
         /// <returns></returns>
         [HttpGet]  
         public async Task<MessageModel<PageModel<WeChatPushLog>>> Get([FromQuery] PaginationModel pagination)
-        { 
+        {
+            pagination.OrderByFileds = "Id desc";
             var data = await _WeChatPushLogServices.QueryPage(pagination);
             return new MessageModel<PageModel<WeChatPushLog>> { success = true, response = data};
         }  
