@@ -613,7 +613,8 @@ namespace Blog.Core.Services
 
         private async Task<string> HandleKeyword(WeChatXMLDto weChat,bool isEvent =false)
         {
-            var findKey = (await _weChatKeywordServices.Query(t => t.publicAccount.Equals(weChat.publicAccount) && t.key.Equals((isEvent ? weChat.EventKey : weChat.Content.ObjToString().Trim())))).FirstOrDefault();
+            var key = (isEvent ? weChat.EventKey : weChat.Content.ObjToString().Trim());
+            var findKey = (await _weChatKeywordServices.Query(t => t.publicAccount.Equals(weChat.publicAccount) && t.key.Equals(key))).FirstOrDefault();
             if (findKey != null)
             {
                 switch (findKey.media_type)
