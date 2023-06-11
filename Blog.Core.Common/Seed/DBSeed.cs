@@ -385,7 +385,20 @@ namespace Blog.Core.Common.Seed
 
                     #endregion
 
-                    
+                    #region WeChatKeyword
+
+                    if (!await myContext.Db.Queryable<WeChatKeyword>().AnyAsync())
+                    {
+                        Console.WriteLine("Table:WeChatKeyword created success!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Table:WeChatKeyword already exists...");
+                    }
+
+                    #endregion
+
+
                     //种子初始化
                     await SeedDataAsync(myContext.Db);
 

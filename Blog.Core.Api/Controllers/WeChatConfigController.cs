@@ -65,6 +65,17 @@ namespace Blog.Core.Controllers
             await _WeChatConfigServices.Update(obj);
             return new MessageModel<string> { success = true};
         }
+
+        /// <summary>
+        /// 编辑关注
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        public async Task<MessageModel<string>> putFocus([FromBody] WeChatConfig obj)
+        {
+            await _WeChatConfigServices.Db.Updateable<WeChatConfig>(obj).UpdateColumns(t => new { t.isFocusReply, t.replyID, t.replyText, t.replyType,t.replyTitle,t.replyDescription }).ExecuteCommandAsync();
+            return new MessageModel<string> { success = true };
+        }
         /// <summary>
         /// 删除
         /// </summary> 

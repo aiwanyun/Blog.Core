@@ -913,7 +913,7 @@
             Values控制器
             </summary>
         </member>
-        <member name="M:Blog.Core.Controllers.ValuesController.#ctor(Blog.Core.IServices.IBlogArticleServices,AutoMapper.IMapper,Blog.Core.IServices.IAdvertisementServices,Blog.Core.Model.Love,Blog.Core.IServices.IRoleModulePermissionServices,Blog.Core.Common.HttpContextUser.IUser,Blog.Core.IServices.IPasswordLibServices,Blog.Core.Common.WebApiClients.HttpApis.IBlogApi,Blog.Core.Common.WebApiClients.HttpApis.IDoubanApi,Blog.Core.Common.Https.HttpPolly.IHttpPollyHelper,Microsoft.Extensions.Options.IOptions{Blog.Core.Common.Option.SeqOptions})">
+        <member name="M:Blog.Core.Controllers.ValuesController.#ctor(Blog.Core.IServices.IBlogArticleServices,AutoMapper.IMapper,Blog.Core.IServices.IAdvertisementServices,Blog.Core.Model.Love,Blog.Core.IServices.IRoleModulePermissionServices,Blog.Core.Common.HttpContextUser.IUser,Blog.Core.IServices.IPasswordLibServices,Blog.Core.Common.WebApiClients.HttpApis.IBlogApi,Blog.Core.Common.WebApiClients.HttpApis.IDoubanApi,Blog.Core.Common.Https.HttpPolly.IHttpPollyHelper,Blog.Core.IServices.IWeChatConfigServices,Microsoft.Extensions.Options.IOptions{Blog.Core.Common.Option.SeqOptions})">
             <summary>
             ValuesController
             </summary>
@@ -1131,6 +1131,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Blog.Core.Controllers.WeChatConfigController.putFocus(Blog.Core.Model.Models.WeChatConfig)">
+            <summary>
+            编辑关注
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Blog.Core.Controllers.WeChatConfigController.Delete(System.String)">
             <summary>
             删除
@@ -1252,6 +1258,55 @@
             用户解绑
             </summary>
             <param name="info">消息</param> 
+            <returns></returns>
+        </member>
+        <member name="T:Blog.Core.Controllers.WeChatKeywordController">
+            <summary>
+            WeChatKeywordController
+            </summary>
+        </member>
+        <member name="M:Blog.Core.Controllers.WeChatKeywordController.#ctor(Blog.Core.IServices.BASE.IBaseServices{Blog.Core.Model.Models.WeChatKeyword},Blog.Core.IServices.IWeChatConfigServices)">
+            <summary>
+            构造函数
+            </summary> 
+            <param name="wechatKeywordServices"></param> 
+        </member>
+        <member name="M:Blog.Core.Controllers.WeChatKeywordController.Get(Blog.Core.Model.PaginationModel)">
+            <summary>
+            获取
+            </summary>
+            <param name="pagination">分页条件</param> 
+            <returns></returns>
+        </member>
+        <member name="M:Blog.Core.Controllers.WeChatKeywordController.Get(System.String)">
+            <summary>
+            获取(id)
+            </summary>
+            <param name="id">主键ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:Blog.Core.Controllers.WeChatKeywordController.Post(Blog.Core.Model.Models.WeChatKeyword)">
+            <summary>
+            添加
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Blog.Core.Controllers.WeChatKeywordController.Put(Blog.Core.Model.Models.WeChatKeyword)">
+            <summary>
+            更新
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Blog.Core.Controllers.WeChatKeywordController.Delete(System.String)">
+            <summary>
+            删除
+            </summary> 
+            <returns></returns> 
+        </member>
+        <member name="M:Blog.Core.Controllers.WeChatKeywordController.BatchDelete(System.String)">
+            <summary>
+            批量删除
+            </summary>
             <returns></returns>
         </member>
         <member name="T:Blog.Core.Controllers.WeChatPushLogController">

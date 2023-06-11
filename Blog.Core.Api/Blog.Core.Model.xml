@@ -1695,6 +1695,36 @@
             备注
             </summary>
         </member>
+        <member name="P:Blog.Core.Model.Models.WeChatConfig.isFocusReply">
+            <summary>
+            是否关注回复
+            </summary> 
+        </member>
+        <member name="P:Blog.Core.Model.Models.WeChatConfig.replyType">
+            <summary>
+            回复类型
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.WeChatConfig.replyID">
+            <summary>
+            回复媒体ID
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.WeChatConfig.replyText">
+            <summary>
+            回复文字
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.WeChatConfig.replyTitle">
+            <summary>
+            回复视频标题
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.WeChatConfig.replyDescription">
+            <summary>
+            回复视频描述
+            </summary>
+        </member>
         <member name="P:Blog.Core.Model.Models.WeChatConfig.Enabled">
             <summary>
             是否激活
@@ -1728,6 +1758,51 @@
         <member name="P:Blog.Core.Model.Models.WeChatConfig.ModifyTime">
             <summary>
             修改时间
+            </summary>
+        </member>
+        <member name="T:Blog.Core.Model.Models.WeChatKeyword">
+            <summary>
+            微信公众号关键词回复
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.WeChatKeyword.publicAccount">
+            <summary>
+            微信公众号id
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.WeChatKeyword.key">
+            <summary>
+            触发关键词
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.WeChatKeyword.media_id">
+            <summary>
+            微信媒体id
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.WeChatKeyword.media_type">
+            <summary>
+            媒体类型
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.WeChatKeyword.title">
+            <summary>
+            视频标题
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.WeChatKeyword.description">
+            <summary>
+            视频文本
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.WeChatKeyword.media_desc">
+            <summary>
+            回复文字
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.WeChatKeyword.url">
+            <summary>
+            访问url
             </summary>
         </member>
         <member name="T:Blog.Core.Model.Models.WeChatPushLog">
@@ -3149,6 +3224,41 @@
         <member name="P:Blog.Core.Model.ViewModels.WeChatApiDto.headimgurl">
             <summary>
             头像地址
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.ViewModels.WeChatApiDto.item">
+            <summary>
+            图片列表
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.ViewModels.WeChatApiDto.total_count">
+            <summary>
+            总数
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.ViewModels.WeChatApiDto.item_count">
+            <summary>
+            当前个数
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.ViewModels.WeChatApiDto.media_id">
+            <summary>
+            媒体id
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.ViewModels.WeChatApiDto.title">
+            <summary>
+            视频title
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.ViewModels.WeChatApiDto.description">
+            <summary>
+            视频描述
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.ViewModels.WeChatApiDto.down_url">
+            <summary>
+            视频下载地址
             </summary>
         </member>
         <member name="T:Blog.Core.Model.ViewModels.WeChatCardMsgDataDto">

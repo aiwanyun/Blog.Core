@@ -32,7 +32,7 @@ namespace Blog.Core.Model.ViewModels
         /// <summary>
         /// 过期时间(秒)
         /// </summary>
-        public int expires_in { get; set; } 
+        public int expires_in { get; set; }
 
 
         /// <summary>
@@ -110,7 +110,82 @@ namespace Blog.Core.Model.ViewModels
         /// <summary>
         /// 头像地址
         /// </summary>
-        public string headimgurl { get; set; } 
+        public string headimgurl { get; set; }
+
+
+        /// <summary>
+        /// 图片列表
+        /// </summary>
+        public List<WeChatMediaItems> item { get; set; }
+        /// <summary>
+        /// 总数
+        /// </summary>
+        public int total_count { get; set; }
+        /// <summary>
+        /// 当前个数
+        /// </summary>
+        public int item_count { get; set; }
+        /// <summary>
+        /// 媒体id
+        /// </summary>
+        public string media_id { get; set; }
+        /// <summary>
+        /// 视频title
+        /// </summary>
+        public string title { get; set; }
+        /// <summary>
+        /// 视频描述
+        /// </summary>
+        public string description { get; set; }
+        /// <summary>
+        /// 视频下载地址
+        /// </summary>
+        public string down_url { get; set; }
+
+
 
     }
+    public class WeChatMediaItems
+    {
+        public string media_id { get; set; }
+        public string name { get; set; }
+        public string description { get; set; }
+        public int update_time { get; set; }
+        public string url { get; set; }
+        public WeChatNewsContent content { get; set; }
+        
+    }
+
+    public class WeChatNewsContent
+    {
+        
+            public List<WeChatNewsContentItem> news_item { get; set; }
+    }
+    public class WeChatNewsContentItem
+    {
+
+        public string title { get; set; }
+        public string thumb_media_id { get; set; }
+        public string show_cover_pic { get; set; }
+        public string author { get; set; }
+        public string digest { get; set; }
+        public string content { get; set; }
+        public string url { get; set; }
+        public string content_source_url { get; set; }
+        //"content": {
+        //   "news_item": [{
+        //       "title": TITLE,
+        //       "thumb_media_id": THUMB_MEDIA_ID,
+        //       "show_cover_pic": SHOW_COVER_PIC(0 / 1),
+        //       "author": AUTHOR,
+        //       "digest": DIGEST,
+        //       "content": CONTENT,
+        //       "url": URL,
+        //       "content_source_url": CONTETN_SOURCE_URL
+        //   },
+        //   //多图文消息会在此处有多篇文章
+        //   ]
+        //},
+    }
+
 }

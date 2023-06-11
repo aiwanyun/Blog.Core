@@ -1,7 +1,15 @@
 ﻿using Blog.Core.Model.ViewModels;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
+using System.Security.Policy;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Blog.Core.Common.Helper
@@ -50,13 +58,116 @@ namespace Blog.Core.Common.Helper
         /// <param name="fileName">文件名</param>
         /// <param name="inputStream">文件输入流</param>
         /// <returns>media_id</returns>
-        public async static Task<WeChatApiDto> UploadMedia(string token, string type, string fileName, Stream inputStream)
+        public async static Task<WeChatApiDto> UploadMedia(string token, string type, IFormCollection form)
         {
-            var url = $"https://api.weixin.qq.com/cgi-bin/material/add_material?access_token={token}&type={type}"; 
-            using var client = new HttpClient();
-            using HttpContent content = new StreamContent(inputStream);
-            var httpResponse = await client.PostAsync(url, content);
-            var txt = await httpResponse.Content.ReadAsStringAsync();
+            var url = $"https://api.weixin.qq.com/cgi-bin/material/add_material?access_token={token}&type={type}";
+
+            var inputStream = form.Files[0].OpenReadStream();
+            var fileName = form.Files[0].FileName;
+            byte[] data;
+            using (var br = new BinaryReader(inputStream))
+                data = br.ReadBytes((int)inputStream.Length);
+            // 设置参数  
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            CookieContainer cookieContainer = new CookieContainer();
+            request.CookieContainer = cookieContainer;
+            request.AllowAutoRedirect = true;
+            request.Method = "POST";
+            string boundary = DateTime.Now.Ticks.ToString("X"); // 隨機分隔線
+            request.ContentType = "multipart/form-data;charset=utf-8;boundary=" + boundary;
+            byte[] itemBoundaryBytes = Encoding.UTF8.GetBytes("\r\n--" + boundary + "\r\n");
+            byte[] endBoundaryBytes = Encoding.UTF8.GetBytes("\r\n--" + boundary + "--\r\n");
+            //请求头部信息(文件)
+            StringBuilder sbHeader =
+                new StringBuilder(
+                    string.Format(
+                        "Content-Disposition: form-data; name=\"media\";filename=\"{0}\"\r\nContent-Type:application/octet-stream\r\n\r\n",
+                       fileName));
+            byte[] postHeaderBytes = Encoding.UTF8.GetBytes(sbHeader.ToString());
+
+            
+
+            Stream postStream = request.GetRequestStream();
+
+            //文件
+            postStream.Write(itemBoundaryBytes, 0, itemBoundaryBytes.Length);
+            postStream.Write(postHeaderBytes, 0, postHeaderBytes.Length);
+            postStream.Write(data, 0, data.Length);
+
+            //文本
+            if (form.ContainsKey("description"))
+            {
+                //请求头部信息(文本)
+                StringBuilder sbHeaderStr =
+                    new StringBuilder(
+                        string.Format(
+                            "Content-Disposition: form-data; name=\"description\"\r\n\r\n{0}",
+                            form["description"]));
+                byte[] postHeaderBytesStr = Encoding.UTF8.GetBytes(sbHeaderStr.ToString());
+                postStream.Write(itemBoundaryBytes, 0, itemBoundaryBytes.Length);
+                postStream.Write(postHeaderBytesStr, 0, postHeaderBytesStr.Length);
+            }
+
+
+            postStream.Write(endBoundaryBytes, 0, endBoundaryBytes.Length);
+            postStream.Close();
+ 
+            HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+            Stream instream = response.GetResponseStream();
+            StreamReader sr = new StreamReader(instream, Encoding.UTF8);
+            string txt = await sr.ReadToEndAsync();
+            var res = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
+            return res;
+
+
+            //using var client = new HttpClient();
+
+            ////form-data; name="media"; filename="小清新美女 手指头 嘴唇4k美女壁纸3840x2160_彼岸图网.jpg"
+            ////var content = "";
+            //string boundary = DateTime.Now.Ticks.ToString("X");
+            //var formData = new MultipartFormDataContent();
+            //formData.Headers.Clear();
+            //formData.Headers.Add("ContentType", "multipart/form-data; name=\"media\"");
+            ////formData.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("multipart/form-data; name=\"media\"");
+            //byte[] data;
+            //using (var br = new BinaryReader(inputStream))
+            //    data = br.ReadBytes((int)inputStream.Length);
+            //ByteArrayContent imageContent = new ByteArrayContent(data);
+            //formData.Add(imageContent, "media", fileName); 
+
+
+            //var httpResponse = await client.PostAsync(url, formData);
+            //var txt = await httpResponse.Content.ReadAsStringAsync();
+            //var res = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
+            //return res;
+        }
+        /// <summary>
+        /// 获取素材详情
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="media_id"></param>
+        /// <returns></returns>
+        public async static Task<WeChatApiDto> GetMediaInfo(string token,string media_id)
+        {
+            string url = $"https://api.weixin.qq.com/cgi-bin/material/get_material?access_token={token}";
+            var obj = new { media_id = media_id };
+            var txt = await HttpHelper.PostAsync(url, JsonConvert.SerializeObject(obj));
+            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
+            return data;
+        }
+
+        /// <summary>
+        /// 获取素材列表
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="page">当前页</param>
+        /// <param name="size">页数</param>
+        /// <returns></returns>
+        public async static Task<WeChatApiDto> GetMediaList(string token,string type= "image", int page=1,int size=10)
+        {
+            string url = $"https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token={token}"; 
+            var obj = new { type = type, offset =(page - 1) *size, count =size};
+            var txt = await HttpHelper.PostAsync(url,JsonConvert.SerializeObject(obj));
             var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
             return data;
         }

@@ -71,6 +71,37 @@ namespace Blog.Core.Model.Models
         /// </summary>
         [SugarColumn(Length = 200,IsNullable = true)]
         public string remark { get; set; }
+
+        /// <summary>
+        /// 是否关注回复
+        /// </summary> 
+        public bool isFocusReply { get; set; }
+
+        /// <summary>
+        /// 回复类型
+        /// </summary>
+        [SugarColumn(Length = 10, IsNullable = true)]
+        public string replyType { get; set; }
+        /// <summary>
+        /// 回复媒体ID
+        /// </summary>
+        [SugarColumn(Length = 100, IsNullable = true)]
+        public string replyID { get; set; }
+        /// <summary>
+        /// 回复文字
+        /// </summary>
+        [SugarColumn(Length = 200, IsNullable = true)]
+        public string replyText { get; set; }
+        /// <summary>
+        /// 回复视频标题
+        /// </summary>
+        [SugarColumn(Length = 100, IsNullable = true)]
+        public string replyTitle { get; set; }
+        /// <summary>
+        /// 回复视频描述
+        /// </summary>
+        [SugarColumn(Length = 200, IsNullable = true)]
+        public string replyDescription { get; set; }
         /// <summary>
         /// 是否激活
         /// </summary>

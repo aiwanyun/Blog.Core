@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using Blog.Core.Repository.UnitOfWorks;
 using System.Reflection;
 using Serilog;
+using Blog.Core.IServices.BASE;
+using System.Linq;
 
 namespace Blog.Core.Services
 {
@@ -23,10 +25,14 @@ namespace Blog.Core.Services
     {
         readonly IUnitOfWorkManage _unitOfWorkManage;
         readonly IWeChatSubServices _weChatSubServices;
-        public WeChatConfigServices(IUnitOfWorkManage unitOfWorkManage, ILogger<WeChatConfigServices> logger, IWeChatSubServices weChatSubServices)
+        readonly IBaseServices<WeChatKeyword> _weChatKeywordServices;
+        public WeChatConfigServices(IUnitOfWorkManage unitOfWorkManage
+            , IBaseServices<WeChatKeyword> weChatKeywordServices
+            , IWeChatSubServices weChatSubServices)
         {
             this._unitOfWorkManage = unitOfWorkManage;
             _weChatSubServices = weChatSubServices;
+            _weChatKeywordServices = weChatKeywordServices;
         }  
         public async Task<MessageModel<WeChatApiDto>> GetToken(string publicAccount)
         { 
@@ -601,14 +607,71 @@ namespace Blog.Core.Services
         /// <returns></returns>
         private async Task<string> HandText(WeChatXMLDto weChat)
         {
-            return await Task.Run(() =>
+
+            var findKey = (await _weChatKeywordServices.Query(t => t.publicAccount.Equals(weChat.publicAccount) && t.key.Equals(weChat.Content.ObjToString().Trim()))).FirstOrDefault();
+            if (findKey != null)
             {
-                return @$"<xml><ToUserName><![CDATA[{weChat.FromUserName}]]></ToUserName>
+                switch (findKey.media_type)
+                {
+                    case "text":
+                        return @$"<xml>
+                                <ToUserName><![CDATA[{weChat.FromUserName}]]></ToUserName>
+                                <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
+                                <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>
+                                <MsgType><![CDATA[{findKey.media_type}]]></MsgType>
+                                <Content><![CDATA[{findKey.media_desc}]]></Content>
+                                </xml>";
+                    case "image":
+                        return @$"<xml>
+                                <ToUserName><![CDATA[{weChat.FromUserName}]]></ToUserName>
+                                <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
+                                <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>
+                                <MsgType><![CDATA[{findKey.media_type}]]></MsgType>
+                                <Image><MediaId><![CDATA[{findKey.media_id}]]></MediaId></Image>
+                                </xml>";
+                    case "voice":
+                        return @$"<xml>
+                                <ToUserName><![CDATA[{weChat.FromUserName}]]></ToUserName>
+                                <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
+                                <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>
+                                <MsgType><![CDATA[{findKey.media_type}]]></MsgType>
+                                <Voice><MediaId><![CDATA[{findKey.media_id}]]></MediaId></Voice>
+                                </xml>";
+                    case "video":
+                        return @$"<xml>
+                                <ToUserName><![CDATA[{weChat.FromUserName}]]></ToUserName>
+                                <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
+                                <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>
+                                <MsgType><![CDATA[{findKey.media_type}]]></MsgType>
+                                <Video>
+                                     <MediaId><![CDATA[{findKey.media_id}]]></MediaId>
+                                     <Title><![CDATA[{findKey.title}]]></Title>
+                                     <Description><![CDATA[{findKey.description}]]></Description>
+                                </Video>
+                                </xml>";
+                    default:
+                        return @$"<xml>
+                                <ToUserName><![CDATA[{weChat.FromUserName}]]></ToUserName>
                                 <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
                                 <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>
                                 <MsgType><![CDATA[text]]></MsgType>
-                                <Content><![CDATA[我收到了文本=>{weChat.Content}]]></Content></xml>";
-            });
+                                <Content><![CDATA[匹配错误:media_type:{findKey.media_type}]]></Content>
+                                </xml>";
+                }
+
+            }
+            else
+            {
+                return @$"<xml>
+                                <ToUserName><![CDATA[{weChat.FromUserName}]]></ToUserName>
+                                <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
+                                <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>
+                                <MsgType><![CDATA[text]]></MsgType>
+                                <Content><![CDATA[我收到了文本=>{weChat.Content}]]></Content>
+                                </xml>";
+            }
+
+
         }
         /// <summary>
         /// 处理图片
@@ -738,14 +801,67 @@ namespace Blog.Core.Services
             }
             else
             {
-                return await Task.Run(() =>
+                var findWechat = await this.QueryById(weChat.publicAccount);
+                if (findWechat != null && findWechat.isFocusReply)
+                {
+                    switch (findWechat.replyType)
+                    {
+                        case "text":
+                            return @$"<xml>
+                                <ToUserName><![CDATA[{weChat.FromUserName}]]></ToUserName>
+                                <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
+                                <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>
+                                <MsgType><![CDATA[{findWechat.replyType}]]></MsgType>
+                                <Content><![CDATA[{findWechat.replyText}]]></Content>
+                                </xml>";
+                        case "image":
+                            return @$"<xml>
+                                <ToUserName><![CDATA[{weChat.FromUserName}]]></ToUserName>
+                                <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
+                                <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>
+                                <MsgType><![CDATA[{findWechat.replyType}]]></MsgType>
+                                <Image><MediaId><![CDATA[{findWechat.replyID}]]></MediaId></Image>
+                                </xml>";
+                        case "voice":
+                            return @$"<xml>
+                                <ToUserName><![CDATA[{weChat.FromUserName}]]></ToUserName>
+                                <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
+                                <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>
+                                <MsgType><![CDATA[{findWechat.replyType}]]></MsgType>
+                                <Voice><MediaId><![CDATA[{findWechat.replyID}]]></MediaId></Voice>
+                                </xml>";
+                        case "video":
+                            return @$"<xml>
+                                <ToUserName><![CDATA[{weChat.FromUserName}]]></ToUserName>
+                                <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
+                                <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>
+                                <MsgType><![CDATA[{findWechat.replyType}]]></MsgType>
+                                <Video>
+                                     <MediaId><![CDATA[{findWechat.replyID}]]></MediaId>
+                                     <Title><![CDATA[{findWechat.replyTitle}]]></Title>
+                                     <Description><![CDATA[{findWechat.replyDescription}]]></Description>
+                                </Video>
+                                </xml>";
+                        default:
+                            return @$"<xml>
+                                <ToUserName><![CDATA[{weChat.FromUserName}]]></ToUserName>
+                                <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
+                                <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>
+                                <MsgType><![CDATA[text]]></MsgType>
+                                <Content><![CDATA[匹配错误:media_type:{findWechat.replyType}]]></Content>
+                                </xml>";
+                    }
+                }
+                else
                 {
                     return @$"<xml><ToUserName><![CDATA[{weChat.FromUserName}]]></ToUserName>
                                 <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
                                 <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>
                                 <MsgType><![CDATA[text]]></MsgType>
                                 <Content><![CDATA[我收到了已关注事件=>key:{weChat.EventKey}=>ticket:{weChat.Ticket}]]></Content></xml>";
-                });
+                }
+
+
             }
         }
         /// <summary>
