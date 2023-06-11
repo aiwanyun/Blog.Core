@@ -90,7 +90,7 @@ namespace Blog.Core.Model.Models
         /// <summary>
         /// 回复文字
         /// </summary>
-        [SugarColumn(Length = 200, IsNullable = true)]
+        [SugarColumn(Length = 2000, IsNullable = true)]
         public string replyText { get; set; }
         /// <summary>
         /// 回复视频标题
