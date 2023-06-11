@@ -611,9 +611,9 @@ namespace Blog.Core.Services
 
         }
 
-        private async Task<string> HandleKeyword(WeChatXMLDto weChat)
+        private async Task<string> HandleKeyword(WeChatXMLDto weChat,bool isEvent =false)
         {
-            var findKey = (await _weChatKeywordServices.Query(t => t.publicAccount.Equals(weChat.publicAccount) && t.key.Equals(weChat.Content.ObjToString().Trim()))).FirstOrDefault();
+            var findKey = (await _weChatKeywordServices.Query(t => t.publicAccount.Equals(weChat.publicAccount) && t.key.Equals((isEvent ? weChat.EventKey : weChat.Content.ObjToString().Trim())))).FirstOrDefault();
             if (findKey != null)
             {
                 switch (findKey.media_type)
@@ -672,7 +672,7 @@ namespace Blog.Core.Services
                                 <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
                                 <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>
                                 <MsgType><![CDATA[text]]></MsgType>
-                                <Content><![CDATA[我收到了文本=>{weChat.Content}]]></Content>
+                                <Content><![CDATA[我收到了文本=>{(isEvent ? weChat.EventKey : weChat.Content)}]]></Content>
                                 </xml>";
             }
         }
@@ -1005,7 +1005,7 @@ namespace Blog.Core.Services
         /// <returns></returns>
         private async Task<string> EventCLICK(WeChatXMLDto weChat)
         {
-            return await HandleKeyword(weChat);
+            return await HandleKeyword(weChat,true);
         }
         /// <summary>
         /// 点击菜单网址事件
