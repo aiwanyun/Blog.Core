@@ -207,7 +207,7 @@ namespace Blog.Core.Api.Controllers
                     }
                     if (string.IsNullOrEmpty(request.passwd))
                     {
-                        request.passwd = GenerateNumber(2) + padName;
+                        request.passwd = GenerateNumber(5);
                     }
                     if (string.IsNullOrEmpty(request.url))
                     {
