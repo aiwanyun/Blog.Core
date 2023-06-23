@@ -109,6 +109,15 @@ namespace Blog.Core.Api.Controllers
         }
         private async Task<MessageModel<string>> CheckData(Nightscout request)
         {
+            if(string.IsNullOrEmpty(request.name))
+                return MessageModel<string>.Fail($"名称不能为空");
+
+            if (string.IsNullOrEmpty(request.passwd))
+                return MessageModel<string>.Fail($"密码不能为空");
+
+            if (string.IsNullOrEmpty(request.url))
+                return MessageModel<string>.Fail($"域名不能为空");
+
             Expression<Func<Nightscout, bool>> whereExpression = a => true;
 
             whereExpression = whereExpression.And(t => t.Id != request.Id);
@@ -138,6 +147,22 @@ namespace Blog.Core.Api.Controllers
 
             return MessageModel<string>.Success("");
 
+        }
+        /// <summary>
+        /// 随机生成几位数
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        private string GenerateNumber(int count)
+        {
+            Random random = new Random();
+            string r = "";
+            int i;
+            for (i = 1; i <= count; i++)
+            {
+                r += random.Next(0, 9).ToString();
+            }
+            return r;
         }
         [HttpPost]
         public async Task<MessageModel<string>> Post([FromBody] Nightscout request)
@@ -174,7 +199,27 @@ namespace Blog.Core.Api.Controllers
                         nsserver.curInstanceIp = string.Format(nsserver.instanceIpTemplate, nsserver.curInstanceIpSerial);
                         request.instanceIP = nsserver.curInstanceIp;
                     }
+                    //不填写自动生成
+                    var padName = nsserver.curServiceSerial.ObjToString().PadLeft(3, '0');
+                    if (string.IsNullOrEmpty(request.name))
+                    {
+                        request.name = padName;
+                    }
+                    if (string.IsNullOrEmpty(request.passwd))
+                    {
+                        request.passwd = GenerateNumber(2) + padName;
+                    }
+                    if (string.IsNullOrEmpty(request.url))
+                    {
+                        var templateUrl = AppSettings.app(new string[] { "nightscout", "TemplateUrl" }).ObjToString();
+                        request.url = string.Format(templateUrl, GenerateNumber(2) + padName);
+                    }
+
+                    
+                    
+                   
                 }
+                
                 var check = await CheckData(request);
                 if (!check.success) return check;
                 

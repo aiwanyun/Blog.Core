@@ -913,7 +913,7 @@
             Values控制器
             </summary>
         </member>
-        <member name="M:Blog.Core.Controllers.ValuesController.#ctor(Blog.Core.IServices.IBlogArticleServices,AutoMapper.IMapper,Blog.Core.IServices.IAdvertisementServices,Blog.Core.Model.Love,Blog.Core.IServices.IRoleModulePermissionServices,Blog.Core.Common.HttpContextUser.IUser,Blog.Core.IServices.IPasswordLibServices,Blog.Core.Common.WebApiClients.HttpApis.IBlogApi,Blog.Core.Common.WebApiClients.HttpApis.IDoubanApi,Blog.Core.Common.Https.HttpPolly.IHttpPollyHelper,Blog.Core.IServices.IWeChatConfigServices,Microsoft.Extensions.Options.IOptions{Blog.Core.Common.Option.SeqOptions})">
+        <member name="M:Blog.Core.Controllers.ValuesController.#ctor(Blog.Core.IServices.IBlogArticleServices,AutoMapper.IMapper,Blog.Core.IServices.IAdvertisementServices,Blog.Core.Model.Love,Blog.Core.IServices.IRoleModulePermissionServices,Blog.Core.Common.HttpContextUser.IUser,Blog.Core.IServices.IPasswordLibServices,Blog.Core.Common.WebApiClients.HttpApis.IBlogApi,Blog.Core.Common.WebApiClients.HttpApis.IDoubanApi,Blog.Core.Common.Https.HttpPolly.IHttpPollyHelper,Microsoft.Extensions.Options.IOptions{Blog.Core.Common.Option.SeqOptions})">
             <summary>
             ValuesController
             </summary>
@@ -1466,6 +1466,13 @@
             <summary>
             服务器接口，因为是模板生成，所以首字母是大写的，自己可以重构下
             </summary>
+        </member>
+        <member name="M:Blog.Core.Api.Controllers.NightscoutController.GenerateNumber(System.Int32)">
+            <summary>
+            随机生成几位数
+            </summary>
+            <param name="count"></param>
+            <returns></returns>
         </member>
         <member name="M:Blog.Core.Api.Controllers.NightscoutController.Reset(System.Int64)">
             <summary>
