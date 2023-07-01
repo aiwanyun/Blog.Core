@@ -203,11 +203,11 @@ server {{
                                 List<string> args = new List<string>();
                                 if (nightscout.exposedPort > 0)
                                 {
-                                    args.Add($"docker run --restart=always --net mynet -p {nightscout.exposedPort}:1337 --name {nightscout.serviceName}");
+                                    args.Add($"docker run -m 100m --cpus=1 --restart=always --net mynet -p {nightscout.exposedPort}:1337 --name {nightscout.serviceName}");
                                 }
                                 else
                                 {
-                                    args.Add($"docker run --restart=always --net mynet --ip {nightscout.instanceIP} --name {nightscout.serviceName}");
+                                    args.Add($"docker run -m 100m --cpus=1 --restart=always --net mynet --ip {nightscout.instanceIP} --name {nightscout.serviceName}");
                                 }
                                 args.Add($"-e TZ=Asia/Shanghai");
                                 args.Add($"-e NODE_ENV=production");
