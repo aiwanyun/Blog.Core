@@ -47,6 +47,10 @@ namespace Blog.Core.Model.ViewModels
         /// </summary> 
         public string Event { get; set; }
         /// <summary>
+        /// 消息模板回执状态
+        /// </summary> 
+        public string Statuss { get; set; }
+        /// <summary>
         /// 事件key值
         /// </summary> 
         public string EventKey { get; set; }

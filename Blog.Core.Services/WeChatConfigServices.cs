@@ -781,7 +781,15 @@ namespace Blog.Core.Services
                 case "VIEW":
                     return await EventVIEW(weChat);
                 case "TEMPLATESENDJOBFINISH":
-                    return string.Empty;//暂不处理模板消息推送成功的回调消息
+                    //模板消息回执
+                    return await Task.Run(() =>
+                    {
+                        return @$"<xml><ToUserName><![CDATA[{weChat.FromUserName}]]></ToUserName>
+                                <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
+                                <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>
+                                <MsgType><![CDATA[text]]></MsgType>
+                                <Content><![CDATA[模板回执:{weChat.Statuss}]]></Content></xml>";
+                    });
                 default:
                     return await Task.Run(() =>
                     {
