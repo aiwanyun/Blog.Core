@@ -3730,6 +3730,11 @@
             消息事件
             </summary> 
         </member>
+        <member name="P:Blog.Core.Model.ViewModels.WeChatXMLDto.Statuss">
+            <summary>
+            消息模板回执状态
+            </summary> 
+        </member>
         <member name="P:Blog.Core.Model.ViewModels.WeChatXMLDto.EventKey">
             <summary>
             事件key值

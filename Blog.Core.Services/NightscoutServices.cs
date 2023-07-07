@@ -147,7 +147,7 @@ server {{
                                 var connectionMongoString = "";
                                 if (!string.IsNullOrEmpty(nsserver.mongoLoginName))
                                 {
-                                    connectionMongoString = $"mongodb://{nsserver.mongoLoginName}:{nsserver.mongoLoginPassword}@{nsserver.serverIp}:{nsserver.mongoPort}";
+                                    connectionMongoString = $"mongodb://{nsserver.mongoLoginName}:{nsserver.mongoLoginPassword}@{nsserver.mongoIp}:{nsserver.mongoPort}";
                                 }
                                 else
                                 {
@@ -174,7 +174,7 @@ server {{
                                 //数据库授权
                                 if (!string.IsNullOrEmpty(nsserver.mongoLoginName))
                                 {
-                                    var grantConnectionMongoString = $"mongodb://{nsserver.mongoLoginName}:{nsserver.mongoLoginPassword}@{nsserver.serverIp}:{nsserver.mongoPort}";
+                                    var grantConnectionMongoString = $"mongodb://{nsserver.mongoLoginName}:{nsserver.mongoLoginPassword}@{nsserver.mongoIp}:{nsserver.mongoPort}";
                                     var client = new MongoClient(grantConnectionMongoString);
                                     var data = client.GetDatabase(nightscout.serviceName);
 
