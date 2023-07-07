@@ -217,7 +217,7 @@ server {{
                                 var connectionMongoString = "";
                                 if (!string.IsNullOrEmpty(nsserver.mongoLoginName))
                                 {
-                                    connectionMongoString = $"mongodb://{nsserver.mongoLoginName}:{nsserver.mongoLoginPassword}@{nsserver.mongoIp}:27017/{nightscout.serviceName}";
+                                    connectionMongoString = $"mongodb://{nsserver.mongoLoginName}:{nsserver.mongoLoginPassword}@{nsserver.mongoIp}:{nsserver.mongoPort}/{nightscout.serviceName}";
                                 }
                                 else
                                 {
