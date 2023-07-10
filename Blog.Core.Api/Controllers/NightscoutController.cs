@@ -571,6 +571,7 @@ namespace Blog.Core.Api.Controllers
         /// <param name="nsid"></param>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetBindQR(long nsid)
         {
             var appid = AppSettings.app(new string[] { "miniProgram", "appid" }).ObjToString();
