@@ -63,7 +63,7 @@ public class LogBatchingSink : IBatchedLogEventSink
         {
             var log = logEvent.Adapt<GlobalInformationLog>();
             log.Message = logEvent.RenderMessage();
-            log.Properties = logEvent.Properties.ToJson();
+            log.Properties = logEvent.Properties.ObjToJson();
             log.DateTime = logEvent.Timestamp.DateTime;
             logs.Add(log);
         }
@@ -83,7 +83,7 @@ public class LogBatchingSink : IBatchedLogEventSink
         {
             var log = logEvent.Adapt<GlobalWarningLog>();
             log.Message = logEvent.RenderMessage();
-            log.Properties = logEvent.Properties.ToJson();
+            log.Properties = logEvent.Properties.ObjToJson();
             log.DateTime = logEvent.Timestamp.DateTime;
             logs.Add(log);
         }
@@ -103,7 +103,7 @@ public class LogBatchingSink : IBatchedLogEventSink
         {
             var log = logEvent.Adapt<GlobalErrorLog>();
             log.Message = logEvent.RenderMessage();
-            log.Properties = logEvent.Properties.ToJson();
+            log.Properties = logEvent.Properties.ObjToJson();
             log.DateTime = logEvent.Timestamp.DateTime;
             logs.Add(log);
         }
@@ -123,7 +123,7 @@ public class LogBatchingSink : IBatchedLogEventSink
         {
             var log = logEvent.Adapt<AuditSqlLog>();
             log.Message = logEvent.RenderMessage();
-            log.Properties = logEvent.Properties.ToJson();
+            log.Properties = logEvent.Properties.ObjToJson();
             log.DateTime = logEvent.Timestamp.DateTime;
             logs.Add(log);
         }

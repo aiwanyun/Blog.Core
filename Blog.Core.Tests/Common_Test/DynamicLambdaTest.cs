@@ -59,7 +59,7 @@ public class DynamicLambdaTest
         //方便前端自定义条件查询 
         //语法更舒服
         var data = await _baseRepository.Query();
-        _testOutputHelper.WriteLine(data.ToJson());
+        _testOutputHelper.WriteLine(data.ObjToJson());
 
         await TestConditions("");
         await TestConditions("bId=1");

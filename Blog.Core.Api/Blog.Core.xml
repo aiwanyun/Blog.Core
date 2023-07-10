@@ -1520,15 +1520,7 @@
             <param name="nsid"></param>
             <returns></returns>
         </member>
-        <member name="M:Blog.Core.Api.Controllers.NightscoutController.BindQR(System.String,System.String)">
-            <summary>
-            绑定小程序
-            </summary>
-            <param name="appid"></param>
-            <param name="ticket"></param>
-            <param name="openid"></param>
-            <returns></returns>
-        </member>
+        <!-- Badly formed XML comment ignored for member "M:Blog.Core.Api.Controllers.NightscoutController.BindQR(System.String,System.String)" -->
         <member name="M:Blog.Core.Api.Controllers.NightscoutController.UnBindQR(System.String,System.String)">
             <summary>
             取消绑定小程序

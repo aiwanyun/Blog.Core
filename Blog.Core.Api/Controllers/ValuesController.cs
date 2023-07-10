@@ -454,7 +454,7 @@ namespace Blog.Core.Controllers
         [AllowAnonymous]
         public string TestOption()
         {
-            return _seqOptions.ToJson();
+            return _seqOptions.ObjToJson();
         }
     }
 
