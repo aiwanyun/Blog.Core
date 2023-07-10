@@ -1513,6 +1513,44 @@
             </summary>
             <param name="data">数据</param>
         </member>
+        <member name="M:Blog.Core.Api.Controllers.NightscoutController.GetBindQR(System.Int64)">
+            <summary>
+            获取小程序绑定二维码
+            </summary>
+            <param name="nsid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Blog.Core.Api.Controllers.NightscoutController.BindQR(System.String,System.String)">
+            <summary>
+            绑定小程序
+            </summary>
+            <param name="appid"></param>
+            <param name="ticket"></param>
+            <param name="openid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Blog.Core.Api.Controllers.NightscoutController.UnBindQR(System.String,System.String)">
+            <summary>
+            取消绑定小程序
+            </summary>
+            <param name="appid"></param>
+            <param name="nsid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Blog.Core.Api.Controllers.NightscoutController.CodeLogin(System.String)">
+            <summary>
+            小程code换openid
+            </summary>
+            <param name="code"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Blog.Core.Api.Controllers.NightscoutController.GetCurBloodSugar(System.String)">
+            <summary>
+            小程序获取血糖信息
+            </summary>
+            <param name="openid"></param>
+            <returns></returns>
+        </member>
         <member name="T:Blog.Core.Api.Controllers.SplitDemoController">
             <summary>
             分表demo
