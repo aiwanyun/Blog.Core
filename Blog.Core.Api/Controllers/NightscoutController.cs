@@ -609,7 +609,7 @@ namespace Blog.Core.Api.Controllers
 
                    
                     var ticket = weChatQR.QRticket;
-                    var jsonBind = JsonHelper.ObjToJson(new { path = $"pages/index/index?ticket={ticket}", env_version = "develop", width = 128 });
+                    var jsonBind = JsonHelper.ObjToJson(new { path = $"pages/index/index?ticket={ticket}", env_version = "trial", width = 128 });
                     using (HttpContent httpContentBind = new StringContent(jsonBind))
                     {
                         var urlBind = $"https://api.weixin.qq.com/wxa/getwxacode?access_token={accessTokenDto.access_token}";
