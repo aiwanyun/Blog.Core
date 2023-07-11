@@ -673,13 +673,10 @@ namespace Blog.Core.Api.Controllers
                 {
 
                     bindInfo.LastSubUserOpenID = bindInfo.SubUserOpenID;
-                    //bindInfo.SubFromPublicAccount = appid;
-                    bindInfo.SubJobID = ticketInfo.QRbindJobID;
-                    //bindInfo.SubUserOpenID = openid;
-                    //bindInfo.CompanyID = ticketInfo.QRbindCompanyID;
+                    bindInfo.SubUserOpenID = openid;
                     bindInfo.SubUserRefTime = DateTime.Now;
                     bindInfo.IsUnBind = false;
-                    await _weChatConfigServices.Db.Updateable<WeChatSub>(bindInfo).UpdateColumns(t => new {t.LastSubUserOpenID ,t.SubJobID ,t.SubUserRefTime ,t.IsUnBind }).ExecuteCommandAsync();
+                    await _weChatConfigServices.Db.Updateable<WeChatSub>(bindInfo).UpdateColumns(t => new {t.LastSubUserOpenID ,t.SubUserOpenID, t.SubUserRefTime ,t.IsUnBind }).ExecuteCommandAsync();
                 }
                 ticketInfo.QRisUsed = true;
                 ticketInfo.QRuseTime = DateTime.Now;
