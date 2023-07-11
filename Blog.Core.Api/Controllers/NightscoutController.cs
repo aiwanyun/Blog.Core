@@ -590,6 +590,7 @@ namespace Blog.Core.Api.Controllers
         {
             var appid = AppSettings.app(new string[] { "miniProgram", "appid" }).ObjToString();
             var secret = AppSettings.app(new string[] { "miniProgram", "secret" }).ObjToString();
+            var appEnv = AppSettings.app(new string[] { "miniProgram", "env" }).ObjToString();
             var pushCompanyCode = AppSettings.app(new string[] { "nightscout", "pushCompanyCode" }).ObjToString();
             string url = $"https://api.weixin.qq.com/cgi-bin/stable_token";
 
@@ -621,9 +622,9 @@ namespace Blog.Core.Api.Controllers
                     result = await httpClient.PostAsync(url, httpContent).Result.Content.ReadAsStringAsync();
                     AccessTokenDto accessTokenDto = JsonHelper.JsonToObj<AccessTokenDto>(result);
 
-                   
+                    //正式版为 "release"，体验版为 "trial"，开发版为 "develop"
                     var ticket = weChatQR.QRticket;
-                    var jsonBind = JsonHelper.ObjToJson(new { path = $"pages/index/index?ticket={ticket}", env_version = "trial", width = 128 });
+                    var jsonBind = JsonHelper.ObjToJson(new { path = $"pages/index/index?ticket={ticket}", env_version = appEnv, width = 128 });
                     using (HttpContent httpContentBind = new StringContent(jsonBind))
                     {
                         var urlBind = $"https://api.weixin.qq.com/wxa/getwxacode?access_token={accessTokenDto.access_token}";
