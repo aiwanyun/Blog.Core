@@ -929,7 +929,7 @@ namespace Blog.Core.Api.Controllers
         public string date_str { get; set; }
         public string date_time { get; set; }
         public int? date_step { get; set; }
-        public decimal? sgv { get; set; }
+        public double? sgv { get; set; }
         public double? sgv_str { get; set; }
         public string direction { get; set; }
         public string direction_str { get; set; }
