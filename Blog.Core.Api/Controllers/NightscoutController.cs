@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using Serilog;
 
 using SqlSugar;
+using System.IO;
 using System.Linq.Expressions;
 using System.Net.Http.Headers;
 
@@ -572,7 +573,7 @@ namespace Blog.Core.Api.Controllers
         /// <param name="nsid"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> GetBindQR(long nsid)
+        public async Task<MessageModel<string>> GetBindQR(long nsid)
         {
             var appid = AppSettings.app(new string[] { "miniProgram", "appid" }).ObjToString();
             var secret = AppSettings.app(new string[] { "miniProgram", "secret" }).ObjToString();
@@ -613,8 +614,9 @@ namespace Blog.Core.Api.Controllers
                     using (HttpContent httpContentBind = new StringContent(jsonBind))
                     {
                         var urlBind = $"https://api.weixin.qq.com/wxa/getwxacode?access_token={accessTokenDto.access_token}";
-                        var bindstream = await httpClient.PostAsync(urlBind, httpContentBind).Result.Content.ReadAsStreamAsync();
-                        return File(bindstream, "image/jpeg");
+                        var bindstream = await httpClient.PostAsync(urlBind, httpContentBind).Result.Content.ReadAsByteArrayAsync();
+                        //return File(bindstream, "image/jpeg");
+                        return MessageModel<string>.Success("成功", Convert.ToBase64String(bindstream));
                     }
                 }
             }
@@ -681,7 +683,6 @@ namespace Blog.Core.Api.Controllers
         /// <summary>
         /// 取消绑定小程序
         /// </summary>
-        /// <param name="appid"></param>
         /// <param name="nsid"></param>
         /// <returns></returns>
         [HttpGet]
