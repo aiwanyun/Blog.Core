@@ -80,6 +80,19 @@ namespace Blog.Core.Api.Controllers
                     item.isBindWeChat = true;
                 }
             }
+
+
+            var miniAppid = AppSettings.app(new string[] { "miniProgram", "appid" }).ObjToString();
+            var bindMini = await _wechatsubServices.Query(t => t.SubFromPublicAccount == miniAppid && t.IsUnBind == false && t.CompanyID == pushCompanyCode && data.data.Select(i => i.Id.ToString()).ToList().Contains(t.SubJobID));
+            //isBindWeChat
+            foreach (var item in data.data)
+            {
+                var find = bindMini.Find(t => t.SubJobID.Equals(item.Id.ToString()));
+                if (find != null)
+                {
+                    item.isBindMini = true;
+                }
+            }
             return new MessageModel<PageModel<Nightscout>>()
             {
                 msg = "获取成功",

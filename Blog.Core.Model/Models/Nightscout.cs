@@ -86,11 +86,17 @@ namespace Blog.Core.Model.Models
         [SugarColumn(Length = 50, IsNullable = true)]
         public string resource { get; set; }
         /// <summary>
-        /// 是否绑定
+        /// 是否绑定公众号
         /// </summary>
         [SugarColumn(IsIgnore = true)]
 
         public bool isBindWeChat { get; set; }
+        /// <summary>
+        /// 是否绑定小程序
+        /// </summary>
+        [SugarColumn(IsIgnore = true)]
+
+        public bool isBindMini { get; set; }
         /// <summary>
         /// 启用插件
         /// </summary>
