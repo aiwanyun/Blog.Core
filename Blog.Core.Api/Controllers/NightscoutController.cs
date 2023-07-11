@@ -647,6 +647,24 @@ namespace Blog.Core.Api.Controllers
 
             string appid = AppSettings.app(new string[] { "miniProgram", "appid" }).ObjToString();
             var pushCompanyCode = AppSettings.app(new string[] { "nightscout", "pushCompanyCode" }).ObjToString();
+
+            var nsid = await _weChatConfigServices.Db.Queryable<WeChatSub>().Where(t => t.SubFromPublicAccount == appid && t.CompanyID == pushCompanyCode && t.SubUserOpenID == openid && t.IsUnBind == false).Select(t => t.SubJobID).FirstAsync();
+
+            if (!string.IsNullOrEmpty(nsid))
+            {
+                var tempInfo = await _weChatConfigServices.Db.Queryable<WeChatQR>().Where(t => t.QRpublicAccount == appid && t.QRticket == ticket && t.QRisUsed == false).FirstAsync();
+                if (tempInfo != null)
+                {
+                    tempInfo.QRisUsed = true;
+                    tempInfo.QRuseTime = DateTime.Now;
+                    tempInfo.QRuseOpenid = openid;
+                    await _weChatConfigServices.Db.Updateable<WeChatQR>(tempInfo).UpdateColumns(t => new { t.QRisUsed, t.QRuseOpenid, t.QRuseTime }).ExecuteCommandAsync();
+                }
+
+                return MessageModel<string>.Success("已绑定");
+            }
+
+
             var ticketInfo = await _weChatConfigServices.Db.Queryable<WeChatQR>().Where(t => t.QRpublicAccount == appid && t.QRticket == ticket && t.QRisUsed == false).FirstAsync();
             if (ticketInfo == null)
                return MessageModel<string>.Fail($"没有找到ticket:{ticket},请勿重复使用");
