@@ -572,7 +572,6 @@ namespace Blog.Core.Api.Controllers
         /// <param name="nsid"></param>
         /// <returns></returns>
         [HttpGet]
-        [AllowAnonymous]
         public async Task<IActionResult> GetBindQR(long nsid)
         {
             var appid = AppSettings.app(new string[] { "miniProgram", "appid" }).ObjToString();
@@ -686,8 +685,9 @@ namespace Blog.Core.Api.Controllers
         /// <param name="nsid"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<MessageModel<string>> UnBindQR(string appid, string nsid)
+        public async Task<MessageModel<string>> UnBindQR(string nsid)
         {
+            var appid = AppSettings.app(new string[] { "miniProgram", "appid" }).ObjToString();
             var pushCompanyCode = AppSettings.app(new string[] { "nightscout", "pushCompanyCode" }).ObjToString();
             var bindInfo = await _weChatConfigServices.Db.Queryable<WeChatSub>().Where(t => t.SubFromPublicAccount == appid && t.SubJobID == nsid && t.CompanyID == pushCompanyCode && t.IsUnBind == false).ToListAsync();
             if(bindInfo == null || bindInfo.Count== 0)
