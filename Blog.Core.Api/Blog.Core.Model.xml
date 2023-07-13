@@ -653,7 +653,12 @@
         </member>
         <member name="P:Blog.Core.Model.Models.Nightscout.isBindWeChat">
             <summary>
-            是否绑定
+            是否绑定公众号
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.isBindMini">
+            <summary>
+            是否绑定小程序
             </summary>
         </member>
         <member name="P:Blog.Core.Model.Models.Nightscout.plugins">

@@ -648,9 +648,11 @@ namespace Blog.Core.Api.Controllers
             string appid = AppSettings.app(new string[] { "miniProgram", "appid" }).ObjToString();
             var pushCompanyCode = AppSettings.app(new string[] { "nightscout", "pushCompanyCode" }).ObjToString();
 
-            var nsid = await _weChatConfigServices.Db.Queryable<WeChatSub>().Where(t => t.SubFromPublicAccount == appid && t.CompanyID == pushCompanyCode && t.SubUserOpenID == openid && t.IsUnBind == false).Select(t => t.SubJobID).FirstAsync();
-
-            if (!string.IsNullOrEmpty(nsid))
+            var nsInfo = await _weChatConfigServices.Db.Queryable<WeChatSub>().Where(t => t.SubFromPublicAccount == appid && t.CompanyID == pushCompanyCode && t.SubUserOpenID == openid).FirstAsync();
+            //.Select(t => t.SubJobID)
+            // && t.IsUnBind == false
+            //if (!string.IsNullOrEmpty(nsid))
+            if (nsInfo != null && nsInfo.IsUnBind == false)
             {
                 var tempInfo = await _weChatConfigServices.Db.Queryable<WeChatQR>().Where(t => t.QRpublicAccount == appid && t.QRticket == ticket && t.QRisUsed == false).FirstAsync();
                 if (tempInfo != null)
@@ -684,7 +686,6 @@ namespace Blog.Core.Api.Controllers
                         SubUserRegTime = DateTime.Now,
                         IsUnBind = false
                     };
-
                     await _weChatConfigServices.Db.Insertable<WeChatSub>(bindInfo).ExecuteCommandAsync();
                 }
                 else
@@ -697,8 +698,8 @@ namespace Blog.Core.Api.Controllers
                     await _weChatConfigServices.Db.Updateable<WeChatSub>(bindInfo).UpdateColumns(t => new {t.LastSubUserOpenID ,t.SubUserOpenID, t.SubUserRefTime ,t.IsUnBind }).ExecuteCommandAsync();
                 }
                 ticketInfo.QRisUsed = true;
-                ticketInfo.QRuseTime = DateTime.Now;
                 ticketInfo.QRuseOpenid = openid;
+                ticketInfo.QRuseTime = DateTime.Now;
                 await _weChatConfigServices.Db.Updateable<WeChatQR>(ticketInfo).UpdateColumns(t=>new {t.QRisUsed,t.QRuseOpenid,t.QRuseTime }).ExecuteCommandAsync();
                 _unitOfWorkManage.CommitTran();
             }
