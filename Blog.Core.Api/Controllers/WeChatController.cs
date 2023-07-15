@@ -3,6 +3,7 @@ using Blog.Core.Model;
 using Blog.Core.Model.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 
 namespace Blog.Core.Controllers
 {
@@ -97,11 +98,17 @@ namespace Blog.Core.Controllers
         [HttpGet]
         public async Task<string> Valid([FromQuery] WeChatValidDto validDto)
         {
-            using (var reader = new StreamReader(Request.Body))
+            var bodyStr = "";
+            // 启用倒带功能，就可以让 Request.Body 可以再次读取
+            Request.Body.Seek(0, SeekOrigin.Begin);
+            using (StreamReader reader
+                   = new StreamReader(Request.Body, Encoding.UTF8, true, 1024, true))
             {
-                var body = await reader.ReadToEndAsync();
-                return await _weChatConfigServices.Valid(validDto, body);
+                bodyStr = reader.ReadToEnd();
             }
+
+            Request.Body.Position = 0; 
+            return await _weChatConfigServices.Valid(validDto, bodyStr);
         }
         /// <summary>
         /// 获取订阅用户
