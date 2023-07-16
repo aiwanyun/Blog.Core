@@ -834,16 +834,17 @@ namespace Blog.Core.Api.Controllers
                 //今天
                 var flagDate = DateTime.Now.Date;
                 sugarDTO.day0 = HandleSugarList(sugers, flagDate);
-                if (sugarDTO.day0.Count > 0)
-                {
-                    var upto = sugarDTO.day0.Where(t => t.sgv.Value > 3.9 && t.sgv.Value < 10).Count();
-                    var percent = Math.Round((1.0 * 100 * upto / sugarDTO.day0.Count),0);
-                    sugarDTO.curBlood.percent = percent;
-                }
-                else
-                {
-                    sugarDTO.curBlood.percent = 0;
-                }
+
+                //if (sugarDTO.day0.Count > 0)
+                //{
+                //    var upto = sugarDTO.day0.Where(t => t.sgv.Value > 3.9 && t.sgv.Value < 10).Count();
+                //    var percent = Math.Round((1.0 * 100 * upto / sugarDTO.day0.Count),0);
+                //    sugarDTO.curBlood.percent = percent;
+                //}
+                //else
+                //{
+                //    sugarDTO.curBlood.percent = 0;
+                //}
             }
             {
                 //昨天
