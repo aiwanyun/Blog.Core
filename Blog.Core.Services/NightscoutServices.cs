@@ -36,6 +36,55 @@ namespace Blog.Core.Services
             _nightscoutLogServices = nightscoutLogServices;
             _nightscoutServerServices = nightscoutServerServices;
         }
+        public async Task StopDocker(Nightscout nightscout)
+        {
+            if (string.IsNullOrEmpty(nightscout.serviceName) || string.IsNullOrEmpty(nightscout.url)) return;
+            NightscoutLog log = new NightscoutLog();
+            StringBuilder sb = new StringBuilder();
+
+            var nsserver = await _nightscoutServerServices.QueryById(nightscout.serverId);
+
+
+            FileHelper.FileDel($"/etc/nginx/conf.d/nightscout/{nightscout.Id}.conf");
+
+
+            using (var sshClient = new SshClient(nsserver.serverIp, nsserver.serverPort, nsserver.serverLoginName, nsserver.serverLoginPassword))
+            {
+                //创建SSH
+                sshClient.Connect();
+                using (var cmd = sshClient.CreateCommand(""))
+                {
+                    //刷新nginx
+                    var master = (await _nightscoutServerServices.Query(t => t.isMaster == true)).FirstOrDefault();
+                    if (master != null)
+                    {
+                        using (var sshMasterClient = new SshClient(master.serverIp, master.serverPort, master.serverLoginName, master.serverLoginPassword))
+                        {
+                            sshMasterClient.Connect();
+                            using (var cmdMaster = sshMasterClient.CreateCommand(""))
+                            {
+                                var resMaster = cmdMaster.Execute("docker exec -t nginxserver nginx -s reload");
+                                sb.AppendLine(resMaster);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        sb.AppendLine("NGINX刷新失败");
+                    }
+                    //停止实例
+                    var res = cmd.Execute($"docker stop {nightscout.serviceName}");
+                    sb.AppendLine(res);
+
+                    //删除实例
+                    res = cmd.Execute($"docker rm {nightscout.serviceName}");
+                    sb.AppendLine(res);
+                }
+            }
+
+        }
+
+        
         public async Task RunDocker(Nightscout nightscout, bool isDelete = false)
         {
             try

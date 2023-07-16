@@ -21,6 +21,15 @@ namespace Blog.Core.IServices
         /// <param name="isDelete"></param>
         /// <returns></returns>
         public Task RunDocker(Nightscout nightscout, bool isDelete = false);
+
+
+        /// <summary>
+        /// 停止实例
+        /// </summary>
+        /// <param name="nightscout"></param>
+        /// <param name="isDelete"></param>
+        /// <returns></returns>
+        public Task StopDocker(Nightscout nightscout);
     }
 }
 

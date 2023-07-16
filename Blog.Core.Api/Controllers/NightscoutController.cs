@@ -327,6 +327,19 @@ namespace Blog.Core.Api.Controllers
             return MessageModel<string>.Success("刷新成功");
         }
         /// <summary>
+        /// 停止实例
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<MessageModel<string>> Stop(long id)
+        {
+            var data = await _nightscoutServices.QueryById(id);
+            if (data == null || data.IsDeleted) return MessageModel<string>.Fail("实例不存在");
+            await _nightscoutServices.StopDocker(data);
+            return MessageModel<string>.Success("停止成功");
+        }
+        /// <summary>
         /// 刷新实例
         /// </summary>
         /// <param name="id"></param>
@@ -817,24 +830,30 @@ namespace Blog.Core.Api.Controllers
             {
                 sugarDTO.curBlood.saying = "每一次在控制血糖上的成功都是向自己付出的最好回报。";
             }
-
             {
                 //今天
                 var flagDate = DateTime.Now.Date;
                 sugarDTO.day0 = HandleSugarList(sugers, flagDate);
-
+                if (sugarDTO.day0.Count > 0)
+                {
+                    var upto = sugarDTO.day0.Where(t => t.sgv.Value > 3.9 && t.sgv < 10).Count();
+                    var percent = Math.Round((1.0 * 100 * upto / sugarDTO.day0.Count),0);
+                    sugarDTO.curBlood.percent = percent;
+                }
+                else
+                {
+                    sugarDTO.curBlood.percent = 0;
+                }
             }
             {
                 //昨天
                 var flagDate = DateTime.Now.Date.AddDays(-1);
                 sugarDTO.day1 = HandleSugarList(sugers, flagDate);
-
             }
             {
                 //前天
                 var flagDate = DateTime.Now.Date.AddDays(-2);
                 sugarDTO.day2 = HandleSugarList(sugers, flagDate);
-
             }
             return MessageModel<SugarDTO>.Success("", sugarDTO);
 
@@ -952,6 +971,7 @@ namespace Blog.Core.Api.Controllers
         public bool isMask { get; set; }
         public string title { get; set; }
         public string saying { get; set; }
+        public double percent { get; set; }
     }
     public class AccessTokenDto
     {
