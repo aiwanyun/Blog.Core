@@ -836,7 +836,7 @@ namespace Blog.Core.Api.Controllers
                 sugarDTO.day0 = HandleSugarList(sugers, flagDate);
                 if (sugarDTO.day0.Count > 0)
                 {
-                    var upto = sugarDTO.day0.Where(t => t.sgv.Value > 3.9 && t.sgv < 10).Count();
+                    var upto = sugarDTO.day0.Where(t => t.sgv.Value > 3.9 && t.sgv.Value < 10).Count();
                     var percent = Math.Round((1.0 * 100 * upto / sugarDTO.day0.Count),0);
                     sugarDTO.curBlood.percent = percent;
                 }
