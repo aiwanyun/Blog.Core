@@ -1477,6 +1477,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:Blog.Core.Api.Controllers.NightscoutController.Stop(System.Int64)">
+            <summary>
+            停止实例
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
         <member name="M:Blog.Core.Api.Controllers.NightscoutController.Refresh(System.Int64)">
             <summary>
             刷新实例
