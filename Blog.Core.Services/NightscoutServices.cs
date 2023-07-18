@@ -22,6 +22,7 @@ using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
 using System.Threading;
 
+
 namespace Blog.Core.Services
 {
     /// <summary>
@@ -42,30 +43,50 @@ namespace Blog.Core.Services
         {
             if (string.IsNullOrEmpty(nightscout.serviceName) || string.IsNullOrEmpty(nightscout.url)) return;
             var master = (await _nightscoutServerServices.Query(t => t.isMongo == true)).FirstOrDefault();
-
-
-            using (var sshClient = new SshClient(master.serverIp, master.serverPort, master.serverLoginName, master.serverLoginPassword))
+            NightscoutLog log = new NightscoutLog();
+            StringBuilder sb = new StringBuilder();
+            try
             {
-                //创建SSH
-                sshClient.Connect();
-
-                using (var cmd = sshClient.CreateCommand(""))
+                using (var sshClient = new SshClient(master.serverIp, master.serverPort, master.serverLoginName, master.serverLoginPassword))
                 {
-                    //创建用户
-                    var grantConnectionMongoString = $"mongodb://{nsserver.mongoLoginName}:{nsserver.mongoLoginPassword}@{nsserver.mongoIp}:{nsserver.mongoPort}";
-                    var client = new MongoClient(grantConnectionMongoString);
+                    //创建SSH
+                    sshClient.Connect();
 
-                    client.DropDatabase(nightscout.serviceName);
-                    var database = client.GetDatabase(nightscout.serviceName);
-                    var deleteUserCommand = new BsonDocument
+                    using (var cmd = sshClient.CreateCommand(""))
                     {
-                        { "dropUser", nsserver.mongoLoginName },
-                        { "writeConcern", new BsonDocument("w", 1) }
-                    };
-                    // 执行删除用户的命令
-                    var result = database.RunCommand<BsonDocument>(deleteUserCommand);
-                    //创建用户
-                    var command = new BsonDocument
+                        //创建用户
+                        var grantConnectionMongoString = $"mongodb://{nsserver.mongoLoginName}:{nsserver.mongoLoginPassword}@{nsserver.mongoIp}:{nsserver.mongoPort}";
+                        var client = new MongoClient(grantConnectionMongoString);
+
+                        try
+                        {
+                            client.DropDatabase(nightscout.serviceName);
+                        }
+                        catch (Exception ex)
+                        {
+                            sb.Append($"删除数据库失败:{ex.Message}");
+                        }
+                        var database = client.GetDatabase(nightscout.serviceName);
+
+                        try
+                        {
+                            var deleteUserCommand = new BsonDocument
+                        {
+                            { "dropUser", nsserver.mongoLoginName },
+                            { "writeConcern", new BsonDocument("w", 1) }
+                        };
+                            // 执行删除用户的命令
+                            var result = database.RunCommand<BsonDocument>(deleteUserCommand);
+
+                        }
+                        catch (Exception ex)
+                        {
+                            sb.Append($"删除用户失败:{ex.Message}");
+                        }
+                        try
+                        {
+                            //创建用户
+                            var command = new BsonDocument
                                     {
                                         { "createUser", nsserver.mongoLoginName },
                                         { "pwd" ,nsserver.mongoLoginPassword },
@@ -75,25 +96,54 @@ namespace Blog.Core.Services
                                             }
                                         }
                                     };
-                    result = database.RunCommand<BsonDocument>(command);
+                            var result = database.RunCommand<BsonDocument>(command);
+                        }
+                        catch (Exception ex)
+                        {
+                            sb.Append($"创建用户失败:{ex.Message}");
+                        }
 
-                    //初始化数据库
-                    var res = cmd.Execute($"docker exec -t mongoserver mongorestore -u={nsserver.mongoLoginName} -p={nsserver.mongoLoginPassword} -d {nightscout.serviceName} /data/backup/template");
+                        //初始化数据库
+                        var res = cmd.Execute($"docker exec -t mongoserver mongorestore -u={nsserver.mongoLoginName} -p={nsserver.mongoLoginPassword} -d {nightscout.serviceName} /data/backup/template");
 
-                    //修改参数
-                    var collection = database.GetCollection<MongoDB.Bson.BsonDocument>("profile"); // 集合
-                    var filter = Builders<MongoDB.Bson.BsonDocument>.Filter.Empty; // 条件
-                    DateTime date = DateTime.Now.ToUniversalTime(); // 获取当前日期和时间的DateTime对象
-                    long timestamp = (long)(date - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+                        try
+                        {
+                            //修改参数
+                            var collection = database.GetCollection<MongoDB.Bson.BsonDocument>("profile"); // 集合
+                            var filter = Builders<MongoDB.Bson.BsonDocument>.Filter.Empty; // 条件
+                            DateTime date = DateTime.Now.ToUniversalTime(); // 获取当前日期和时间的DateTime对象
+                            long timestamp = (long)(date - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
 
-                    var update = Builders<BsonDocument>.Update
-                        .Set("created_at", date.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"))
-                        .Set("mills", timestamp)
-                        .Set("startDate", date.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"));
-                    var updateRes = collection.UpdateOne(filter, update);
+                            var update = Builders<BsonDocument>.Update
+                                .Set("created_at", date.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"))
+                                .Set("mills", timestamp)
+                                .Set("startDate", date.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"));
+                            var updateRes = collection.UpdateOne(filter, update);
+                        }
+                        catch (Exception ex)
+                        {
+                            sb.Append($"修改参数失败:{ex.Message}");
+                        }
+                    }
                 }
-            }
 
+            }
+            catch (Exception ex)
+            {
+                sb.AppendLine(ex.ToString());
+
+                Log.Error(ex.Message);
+                Log.Error(ex.StackTrace);
+
+                log.success = false;
+                throw;
+            }
+            finally
+            {
+                log.content = sb.ToString();
+                log.pid = nightscout.Id;
+                await this.Db.Insertable<NightscoutLog>(log).ExecuteCommandAsync();
+            }
         }
 
         public async Task StopDocker(Nightscout nightscout, NightscoutServer nsserver)
@@ -141,8 +191,13 @@ namespace Blog.Core.Services
                 }
                 log.success = true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                sb.AppendLine(ex.ToString());
+
+                Log.Error(ex.Message);
+                Log.Error(ex.StackTrace);
+
                 log.success = false;
                 throw;
             }
@@ -178,14 +233,33 @@ namespace Blog.Core.Services
                         { "writeConcern", new BsonDocument("w", 1) }
                     };
                 // 执行删除用户的命令
-                var delUserInfo = database.RunCommand<BsonDocument>(deleteUserCommand);
-                sb.AppendLine((delUserInfo == null ? "" : delUserInfo.ToJson()));
+                try
+                {
+                    var delUserInfo = database.RunCommand<BsonDocument>(deleteUserCommand);
+                    sb.AppendLine((delUserInfo == null ? "" : delUserInfo.ToJson()));
+                }
+                catch (Exception ex)
+                {
+                    sb.AppendLine($"删除mongo用户失败:{ex.Message}");
+                }
                 //删除mongo
-                client.DropDatabase(nightscout.serviceName);
+                try
+                {
+                    client.DropDatabase(nightscout.serviceName);
+                }
+                catch (Exception ex)
+                {
+                    sb.AppendLine($"删除mongo数据库失败:{ex.Message}");
+                }
                 log.success = true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                sb.AppendLine(ex.ToString());
+
+                Log.Error(ex.Message);
+                Log.Error(ex.StackTrace);
+
                 log.success = false;
                 throw;
             }
@@ -375,10 +449,14 @@ server {{
                 }
                 catch (Exception ex)
                 {
+                    sb.AppendLine(ex.ToString());
+
+                    Log.Error(ex.Message);
+                    Log.Error(ex.StackTrace);
+
                     log.success = false;
-                    sb.AppendLine(ex.Message);
-                    Log.Information(ex.Message);
-                    Log.Information(ex.StackTrace);
+
+                    throw;
                 }
                 finally
                 {
@@ -389,8 +467,9 @@ server {{
             }
             catch (Exception ex)
             {
-                Log.Information(ex.Message);
-                Log.Information(ex.StackTrace);
+                Log.Error(ex.Message);
+                Log.Error(ex.StackTrace);
+                throw;
             }
         }
     }
