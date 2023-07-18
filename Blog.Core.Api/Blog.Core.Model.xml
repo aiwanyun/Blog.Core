@@ -771,9 +771,14 @@
             备注
             </summary>
         </member>
-        <member name="P:Blog.Core.Model.Models.NightscoutServer.isMaster">
+        <member name="P:Blog.Core.Model.Models.NightscoutServer.isNginx">
             <summary>
-            是否为主节点(nginx刷新用到)
+            是否nginx节点服务器
+            </summary>
+        </member>
+        <member name="P:Blog.Core.Model.Models.NightscoutServer.isMongo">
+            <summary>
+            是否mongo节点服务器
             </summary>
         </member>
         <member name="P:Blog.Core.Model.Models.NightscoutServer.count">

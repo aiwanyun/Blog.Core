@@ -75,9 +75,13 @@ namespace Blog.Core.Model.Models
 
         public string remark { get; set; }
         /// <summary>
-        /// 是否为主节点(nginx刷新用到)
+        /// 是否nginx节点服务器
         /// </summary>
-        public bool isMaster { get; set; }
+        public bool isNginx { get; set; }
+        /// <summary>
+        /// 是否mongo节点服务器
+        /// </summary>
+        public bool isMongo { get; set; }
         /// <summary>
         /// 统计数量
         /// </summary>

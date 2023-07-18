@@ -21,16 +21,19 @@ namespace Blog.Core.Tasks
         private readonly IBaseServices<NightscoutLog> _nightscoutLogServices;
         private readonly INightscoutServices _nightscoutServices;
         private readonly IWeChatConfigServices _weChatConfigServices;
+        private readonly IBaseServices<NightscoutServer> _nightscoutServerServices;
 
         public Job_Nightscout_Refresh_Quartz(ITasksQzServices tasksQzServices, ITasksLogServices tasksLogServices
             , INightscoutServices nightscoutServices
             , IBaseServices<NightscoutLog> nightscoutLogServices
+            , IBaseServices<NightscoutServer> nightscoutServerServices
             , IWeChatConfigServices weChatConfigServices)
             : base(tasksQzServices, tasksLogServices)
         {
             _nightscoutServices = nightscoutServices;
             _nightscoutLogServices = nightscoutLogServices;
             _weChatConfigServices = weChatConfigServices;
+            _nightscoutServerServices = nightscoutServerServices;
         }
         public async Task Execute(IJobExecutionContext context)
         { 
@@ -50,7 +53,9 @@ namespace Blog.Core.Tasks
                 var nights = await _nightscoutServices.Query();
                 foreach (var nightscout in nights)
                 {
-                    await _nightscoutServices.RunDocker(nightscout);
+                    var nsserver = await _nightscoutServerServices.QueryById(nightscout.serverId);
+                    await _nightscoutServices.StopDocker(nightscout, nsserver);
+                    await _nightscoutServices.RunDocker(nightscout, nsserver);
                 }
             }
         }

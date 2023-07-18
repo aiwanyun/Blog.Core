@@ -18,18 +18,32 @@ namespace Blog.Core.IServices
         /// 启动/删除实例
         /// </summary>
         /// <param name="nightscout"></param>
-        /// <param name="isDelete"></param>
+        /// <param name="nsserver"></param>
         /// <returns></returns>
-        public Task RunDocker(Nightscout nightscout, bool isDelete = false);
+        public Task RunDocker(Nightscout nightscout, NightscoutServer nsserver);
 
 
         /// <summary>
         /// 停止实例
         /// </summary>
         /// <param name="nightscout"></param>
-        /// <param name="isDelete"></param>
+        /// <param name="nsserver"></param>
         /// <returns></returns>
-        public Task StopDocker(Nightscout nightscout);
+        public Task StopDocker(Nightscout nightscout, NightscoutServer nsserver);
+        /// <summary>
+        /// 删除实例(会清理数据)
+        /// </summary>
+        /// <param name="nightscout"></param>
+        /// <param name="nsserver"></param>
+        /// <returns></returns>
+        public Task DeleteData(Nightscout nightscout, NightscoutServer nsserver);
+        /// <summary>
+        /// 初始化数据库
+        /// </summary>
+        /// <param name="nightscout"></param>
+        /// <param name="nsserver"></param>
+        /// <returns></returns>
+        public Task InitData(Nightscout nightscout, NightscoutServer nsserver);
     }
 }
 

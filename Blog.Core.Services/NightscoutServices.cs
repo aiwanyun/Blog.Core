@@ -20,6 +20,7 @@ using Renci.SshNet;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
+using System.Threading;
 
 namespace Blog.Core.Services
 {
@@ -36,56 +37,167 @@ namespace Blog.Core.Services
             _nightscoutLogServices = nightscoutLogServices;
             _nightscoutServerServices = nightscoutServerServices;
         }
-        public async Task StopDocker(Nightscout nightscout)
+
+        public async Task InitData(Nightscout nightscout, NightscoutServer nsserver)
         {
             if (string.IsNullOrEmpty(nightscout.serviceName) || string.IsNullOrEmpty(nightscout.url)) return;
-            NightscoutLog log = new NightscoutLog();
-            StringBuilder sb = new StringBuilder();
-
-            var nsserver = await _nightscoutServerServices.QueryById(nightscout.serverId);
+            var master = (await _nightscoutServerServices.Query(t => t.isMongo == true)).FirstOrDefault();
 
 
-            FileHelper.FileDel($"/etc/nginx/conf.d/nightscout/{nightscout.Id}.conf");
-
-
-            using (var sshClient = new SshClient(nsserver.serverIp, nsserver.serverPort, nsserver.serverLoginName, nsserver.serverLoginPassword))
+            using (var sshClient = new SshClient(master.serverIp, master.serverPort, master.serverLoginName, master.serverLoginPassword))
             {
                 //创建SSH
                 sshClient.Connect();
+
                 using (var cmd = sshClient.CreateCommand(""))
                 {
-                    //刷新nginx
-                    var master = (await _nightscoutServerServices.Query(t => t.isMaster == true)).FirstOrDefault();
-                    if (master != null)
-                    {
-                        using (var sshMasterClient = new SshClient(master.serverIp, master.serverPort, master.serverLoginName, master.serverLoginPassword))
-                        {
-                            sshMasterClient.Connect();
-                            using (var cmdMaster = sshMasterClient.CreateCommand(""))
-                            {
-                                var resMaster = cmdMaster.Execute("docker exec -t nginxserver nginx -s reload");
-                                sb.AppendLine(resMaster);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        sb.AppendLine("NGINX刷新失败");
-                    }
-                    //停止实例
-                    var res = cmd.Execute($"docker stop {nightscout.serviceName}");
-                    sb.AppendLine(res);
+                    //创建用户
+                    var grantConnectionMongoString = $"mongodb://{nsserver.mongoLoginName}:{nsserver.mongoLoginPassword}@{nsserver.mongoIp}:{nsserver.mongoPort}";
+                    var client = new MongoClient(grantConnectionMongoString);
+                    client.DropDatabase(nightscout.serviceName);
 
-                    //删除实例
-                    res = cmd.Execute($"docker rm {nightscout.serviceName}");
-                    sb.AppendLine(res);
+                    var database = client.GetDatabase(nightscout.serviceName);
+                    var deleteUserCommand = new BsonDocument
+                    {
+                        { "dropUser", nsserver.mongoLoginName },
+                        { "writeConcern", new BsonDocument("w", 1) }
+                    };
+                    // 执行删除用户的命令
+                    var result = database.RunCommand<BsonDocument>(deleteUserCommand);
+                    //创建用户
+                    var command = new BsonDocument
+                                    {
+                                        { "createUser", nsserver.mongoLoginName },
+                                        { "pwd" ,nsserver.mongoLoginPassword },
+                                        { "roles", new BsonArray
+                                            {
+                                                {"readWrite"}
+                                            }
+                                        }
+                                    };
+                    result = database.RunCommand<BsonDocument>(command);
+
+                    //初始化数据库
+                    var res = cmd.Execute($"docker exec -t mongoserver mongorestore -u={nsserver.mongoLoginName} -p={nsserver.mongoLoginPassword} -d {nightscout.serviceName} /data/backup/template");
+
+                    //修改参数
+                    var collection = database.GetCollection<MongoDB.Bson.BsonDocument>("profile"); // 集合
+                    var filter = Builders<MongoDB.Bson.BsonDocument>.Filter.Empty; // 条件
+                    DateTime date = DateTime.Now.ToUniversalTime(); // 获取当前日期和时间的DateTime对象
+                    long timestamp = (long)(date - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+
+                    var update = Builders<BsonDocument>.Update
+                        .Set("created_at", date.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"))
+                        .Set("mills", timestamp)
+                        .Set("startDate", date.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"));
+                    var updateRes = collection.UpdateOne(filter, update);
                 }
             }
 
         }
 
-        
-        public async Task RunDocker(Nightscout nightscout, bool isDelete = false)
+        public async Task StopDocker(Nightscout nightscout, NightscoutServer nsserver)
+        {
+            if (string.IsNullOrEmpty(nightscout.serviceName) || string.IsNullOrEmpty(nightscout.url)) return;
+            NightscoutLog log = new NightscoutLog();
+            StringBuilder sb = new StringBuilder();
+
+
+            try
+            {
+                FileHelper.FileDel($"/etc/nginx/conf.d/nightscout/{nightscout.Id}.conf");
+                using (var sshClient = new SshClient(nsserver.serverIp, nsserver.serverPort, nsserver.serverLoginName, nsserver.serverLoginPassword))
+                {
+                    //创建SSH
+                    sshClient.Connect();
+                    using (var cmd = sshClient.CreateCommand(""))
+                    {
+                        //刷新nginx
+                        var master = (await _nightscoutServerServices.Query(t => t.isNginx == true)).FirstOrDefault();
+                        if (master != null)
+                        {
+                            using (var sshMasterClient = new SshClient(master.serverIp, master.serverPort, master.serverLoginName, master.serverLoginPassword))
+                            {
+                                sshMasterClient.Connect();
+                                using (var cmdMaster = sshMasterClient.CreateCommand(""))
+                                {
+                                    var resMaster = cmdMaster.Execute("docker exec -t nginxserver nginx -s reload");
+                                    sb.AppendLine(resMaster);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            sb.AppendLine("NGINX刷新失败");
+                        }
+                        //停止实例
+                        var res = cmd.Execute($"docker stop {nightscout.serviceName}");
+                        sb.AppendLine(res);
+
+                        //删除实例
+                        res = cmd.Execute($"docker rm {nightscout.serviceName}");
+                        sb.AppendLine(res);
+                    }
+                }
+                log.success = true;
+            }
+            catch (Exception)
+            {
+                log.success = false;
+                throw;
+            }
+            finally
+            {
+                log.content = sb.ToString();
+                log.pid = nightscout.Id;
+                await this.Db.Insertable<NightscoutLog>(log).ExecuteCommandAsync();
+            }
+            
+
+        }
+
+        public async Task DeleteData(Nightscout nightscout, NightscoutServer nsserver)
+        {
+            if (string.IsNullOrEmpty(nightscout.serviceName) || string.IsNullOrEmpty(nightscout.url)) return;
+
+            NightscoutLog log = new NightscoutLog();
+            StringBuilder sb = new StringBuilder();
+
+
+            try
+            {
+                FileHelper.FileDel($"/etc/nginx/conf.d/nightscout/{nightscout.Id}.conf");
+
+                var connectionMongoString = $"mongodb://{nsserver.mongoLoginName}:{nsserver.mongoLoginPassword}@{nsserver.mongoIp}:{nsserver.mongoPort}";
+                var client = new MongoClient(connectionMongoString);
+
+                var database = client.GetDatabase(nightscout.serviceName);
+                var deleteUserCommand = new BsonDocument
+                    {
+                        { "dropUser", nsserver.mongoLoginName },
+                        { "writeConcern", new BsonDocument("w", 1) }
+                    };
+                // 执行删除用户的命令
+                var delUserInfo = database.RunCommand<BsonDocument>(deleteUserCommand);
+                sb.AppendLine((delUserInfo == null ? "" : delUserInfo.ToJson()));
+                //删除mongo
+                client.DropDatabase(nightscout.serviceName);
+                log.success = true;
+            }
+            catch (Exception)
+            {
+                log.success = false;
+                throw;
+            }
+            finally
+            {
+                log.content = sb.ToString();
+                log.pid = nightscout.Id;
+                await this.Db.Insertable<NightscoutLog>(log).ExecuteCommandAsync();
+            }
+        }
+
+        public async Task RunDocker(Nightscout nightscout, NightscoutServer nsserver)
         {
             try
             {
@@ -108,7 +220,7 @@ namespace Blog.Core.Services
                     string key = AppSettings.app(new string[] { "nightscout", "key" }).ObjToString();
 
                     string pushUrl = AppSettings.app(new string[] { "nightscout", "pushUrl" }).ObjToString();
-                    var nsserver = await _nightscoutServerServices.QueryById(nightscout.serverId);
+
                     var webConfig = @$"
 server {{
     listen 443 ssl http2;    
@@ -137,14 +249,7 @@ server {{
     
 }}
 ";
-                    if (isDelete)
-                    {
-                        FileHelper.FileDel($"/etc/nginx/conf.d/nightscout/{nightscout.Id}.conf");
-                    }
-                    else
-                    {
-                        FileHelper.WriteFile($"/etc/nginx/conf.d/nightscout/{nightscout.Id}.conf", webConfig);
-                    }
+                    FileHelper.WriteFile($"/etc/nginx/conf.d/nightscout/{nightscout.Id}.conf", webConfig);
 
 
 
@@ -163,7 +268,7 @@ server {{
                         {
                             //刷新nginx
                             
-                            var master = (await _nightscoutServerServices.Query(t => t.isMaster == true)).FirstOrDefault();
+                            var master = (await _nightscoutServerServices.Query(t => t.isNginx == true)).FirstOrDefault();
                             if(master != null)
                             {
                                 using (var sshMasterClient = new SshClient(master.serverIp, master.serverPort, master.serverLoginName, master.serverLoginPassword))
@@ -189,149 +294,81 @@ server {{
                             res = cmd.Execute($"docker rm {nightscout.serviceName}");
                             sb.AppendLine(res);
 
-
-                            if (isDelete)
+                            //启动实例
+                            List<string> args = new List<string>();
+                            if (nightscout.exposedPort > 0)
                             {
-                                //删除mongo
-                                var connectionMongoString = "";
-                                if (!string.IsNullOrEmpty(nsserver.mongoLoginName))
-                                {
-                                    connectionMongoString = $"mongodb://{nsserver.mongoLoginName}:{nsserver.mongoLoginPassword}@{nsserver.mongoIp}:{nsserver.mongoPort}";
-                                }
-                                else
-                                {
-                                    connectionMongoString = $"mongodb://{nsserver.mongoIp}:{nsserver.mongoPort}";
-                                }
-                                var client = new MongoClient(connectionMongoString);
-                                //client.Settings.UseTls = false;
-                                //client.Settings.RetryWrites = false;
-                                client.DropDatabase(nightscout.serviceName);
-
-                                //var mongiSetting = new MongoClientSettings()
-                                //{
-                                //    UseTls = false,
-                                //    RetryWrites = false,
-                                //    Server = new MongoServerAddress(nsserver.mongoIp, nsserver.mongoPort),
-                                //};
-                                //var mongoClient = new MongoClient(mongiSetting);
-
-
+                                args.Add($"docker run -m 100m --cpus=1 --restart=always --net mynet -p {nightscout.exposedPort}:1337 --name {nightscout.serviceName}");
                             }
                             else
                             {
+                                args.Add($"docker run -m 100m --cpus=1 --restart=always --net mynet --ip {nightscout.instanceIP} --name {nightscout.serviceName}");
+                            }
+                            args.Add($"-e TZ=Asia/Shanghai");
+                            args.Add($"-e NODE_ENV=production");
+                            args.Add($"-e INSECURE_USE_HTTP='true'");
 
-                                //数据库授权
-                                if (!string.IsNullOrEmpty(nsserver.mongoLoginName))
+                            //数据库链接 默认都是内部链接
+                            var connectionMongoString = $"mongodb://{nsserver.mongoLoginName}:{nsserver.mongoLoginPassword}@{nsserver.mongoIp}:{nsserver.mongoPort}/{nightscout.serviceName}";
+
+                            args.Add($"-e MONGO_CONNECTION={connectionMongoString}");
+                            args.Add($"-e API_SECRET={nightscout.passwd}");
+                            //args.Add($"-v {path}/logo2.png:/opt/app/static/images/logo2.png");
+                            //args.Add($"-v {path}/boluswizardpreview.js:/opt/app/lib/plugins/boluswizardpreview.js");
+                            //args.Add($"-v {path}/sandbox.js:/opt/app/lib/sandbox.js");
+                            //args.Add($"-v {path}/constants.json:/opt/app/lib/constants.json");
+                            //args.Add($"-v {path}/zh_CN.json:/opt/app/translations/zh_CN.json");
+                            //args.Add($"-v {path}/maker.js:/opt/app/lib/plugins/maker.js");
+                            //args.Add($"-v {path}/hashauth.js:/opt/app/lib/client/hashauth.js");
+                            //args.Add($"-v {path}/enclave.js:/opt/app/lib/server/enclave.js");
+                            if (nightscout.isConnection)
+                            {
+                                args.Add($"-e MAKER_KEY={MAKER_KEY}");
+                                if (nightscout.isKeepPush)
                                 {
-                                    var grantConnectionMongoString = $"mongodb://{nsserver.mongoLoginName}:{nsserver.mongoLoginPassword}@{nsserver.mongoIp}:{nsserver.mongoPort}";
-                                    var client = new MongoClient(grantConnectionMongoString);
-                                    var data = client.GetDatabase(nightscout.serviceName);
-
-                                    var command = new BsonDocument
-                                    {
-                                        { "createUser", $"{nsserver.mongoLoginName}" },
-                                        { "pwd" ,$"{nsserver.mongoLoginPassword}" },
-
-                                        { "roles", new BsonArray
-                                            {
-                                                {"readWrite"}
-                                            }
-                                        }
-                                    };
-                                    try
-                                    {
-                                        var result = data.RunCommand<BsonDocument>(command);
-                                        sb.AppendLine(result.ToString());
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Log.Information(ex.Message);
-                                    }
+                                    args.Add($"-e KEEP_PUSH='true'");
                                 }
-                                //启动实例
-                                List<string> args = new List<string>();
-                                if (nightscout.exposedPort > 0)
-                                {
-                                    args.Add($"docker run -m 100m --cpus=1 --restart=always --net mynet -p {nightscout.exposedPort}:1337 --name {nightscout.serviceName}");
-                                }
-                                else
-                                {
-                                    args.Add($"docker run -m 100m --cpus=1 --restart=always --net mynet --ip {nightscout.instanceIP} --name {nightscout.serviceName}");
-                                }
-                                args.Add($"-e TZ=Asia/Shanghai");
-                                args.Add($"-e NODE_ENV=production");
-                                args.Add($"-e INSECURE_USE_HTTP='true'");
+                                args.Add($"-e PUSH_URL='{pushUrl}'");
+                            }
+                            args.Add($"-e LANGUAGE=zh_cn");
+                            args.Add($"-e DISPLAY_UNITS='mmol/L'");
+                            args.Add($"-e TIME_FORMAT=24");
+                            args.Add($"-e CUSTOM_TITLE='{CUSTOM_TITLE}'");
+                            args.Add($"-e THEME=colors");
 
-                                //数据库链接 默认都是内部链接
-                                var connectionMongoString = "";
-                                if (!string.IsNullOrEmpty(nsserver.mongoLoginName))
+
+                            List<string> pluginsArr;
+                            try
+                            {
+                                var pluginsNights = JsonConvert.DeserializeObject<List<string>>(nightscout.plugins.ObjToString());
+                                if (pluginsNights != null && pluginsNights.Count > 0)
                                 {
-                                    connectionMongoString = $"mongodb://{nsserver.mongoLoginName}:{nsserver.mongoLoginPassword}@{nsserver.mongoIp}:{nsserver.mongoPort}/{nightscout.serviceName}";
+                                    pluginsArr = pluginsNights;
                                 }
                                 else
-                                {
-                                    connectionMongoString = $"mongodb://{nsserver.mongoIp}:27017/{nightscout.serviceName}";
-                                }
-
-                                args.Add($"-e MONGO_CONNECTION={connectionMongoString}");
-                                args.Add($"-e API_SECRET={nightscout.passwd}");
-                                //args.Add($"-v {path}/logo2.png:/opt/app/static/images/logo2.png");
-                                //args.Add($"-v {path}/boluswizardpreview.js:/opt/app/lib/plugins/boluswizardpreview.js");
-                                //args.Add($"-v {path}/sandbox.js:/opt/app/lib/sandbox.js");
-                                //args.Add($"-v {path}/constants.json:/opt/app/lib/constants.json");
-                                //args.Add($"-v {path}/zh_CN.json:/opt/app/translations/zh_CN.json");
-                                //args.Add($"-v {path}/maker.js:/opt/app/lib/plugins/maker.js");
-                                //args.Add($"-v {path}/hashauth.js:/opt/app/lib/client/hashauth.js");
-                                //args.Add($"-v {path}/enclave.js:/opt/app/lib/server/enclave.js");
-                                if (nightscout.isConnection)
-                                {
-                                    args.Add($"-e MAKER_KEY={MAKER_KEY}");
-                                    if (nightscout.isKeepPush)
-                                    {
-                                        args.Add($"-e KEEP_PUSH='true'");
-                                    }
-                                    args.Add($"-e PUSH_URL='{pushUrl}'");
-                                }
-                                args.Add($"-e LANGUAGE=zh_cn");
-                                args.Add($"-e DISPLAY_UNITS='mmol/L'");
-                                args.Add($"-e TIME_FORMAT=24");
-                                args.Add($"-e CUSTOM_TITLE='{CUSTOM_TITLE}'");
-                                args.Add($"-e THEME=colors");
-
-
-                                List<string> pluginsArr;
-                                try
-                                {
-                                    var pluginsNights = JsonConvert.DeserializeObject<List<string>>(nightscout.plugins.ObjToString());
-                                    if (pluginsNights != null && pluginsNights.Count > 0)
-                                    {
-                                        pluginsArr = pluginsNights;
-                                    }
-                                    else
-                                    {
-                                        pluginsArr = AppSettings.app<NSPlugin>(new string[] { "nightscout", "plugins" }).Select(t => t.key).ToList();
-                                    }
-                                }
-                                catch (Exception)
                                 {
                                     pluginsArr = AppSettings.app<NSPlugin>(new string[] { "nightscout", "plugins" }).Select(t => t.key).ToList();
                                 }
-                                args.Add($"-e SHOW_PLUGINS='{string.Join(" ", pluginsArr)}'");
-                                args.Add($"-e ENABLE='{string.Join(" ", pluginsArr)}'");
-
-                                //args.Add($"-e SHOW_PLUGINS='careportal basal dbsize rawbg iob maker cob bridge bwp cage iage sage boluscalc pushover treatmentnotify mmconnect loop pump profile food openaps bage alexa override cors'");
-                                //args.Add($"-e ENABLE='careportal basal dbsize rawbg iob maker cob bridge bwp cage iage sage boluscalc pushover treatmentnotify mmconnect loop pump profile food openaps bage alexa override cors'");
-
-                                args.Add($"-e AUTH_DEFAULT_ROLES=readable");
-                                args.Add($"-e uid={nightscout.Id}");
-                                //args.Add($"-d nightscout/cgm-remote-monitor:latest");
-                                args.Add($"-d mynightscout:latest");
-
-                                var cmdStr = string.Join(" ", args);
-
-                                res = cmd.Execute(cmdStr);
-                                sb.AppendLine(res);
                             }
+                            catch (Exception)
+                            {
+                                pluginsArr = AppSettings.app<NSPlugin>(new string[] { "nightscout", "plugins" }).Select(t => t.key).ToList();
+                            }
+                            args.Add($"-e SHOW_PLUGINS='{string.Join(" ", pluginsArr)}'");
+                            args.Add($"-e ENABLE='{string.Join(" ", pluginsArr)}'");
+
+                            //args.Add($"-e SHOW_PLUGINS='careportal basal dbsize rawbg iob maker cob bridge bwp cage iage sage boluscalc pushover treatmentnotify mmconnect loop pump profile food openaps bage alexa override cors'");
+                            //args.Add($"-e ENABLE='careportal basal dbsize rawbg iob maker cob bridge bwp cage iage sage boluscalc pushover treatmentnotify mmconnect loop pump profile food openaps bage alexa override cors'");
+
+                            args.Add($"-e AUTH_DEFAULT_ROLES=readable");
+                            args.Add($"-e uid={nightscout.Id}");
+                            //args.Add($"-d nightscout/cgm-remote-monitor:latest");
+                            args.Add($"-d mynightscout:latest");
+
+                            var cmdStr = string.Join(" ", args);
+
+                            res = cmd.Execute(cmdStr);
+                            sb.AppendLine(res);
                         }
                     }
                     log.success = true;

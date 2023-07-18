@@ -246,6 +246,7 @@ namespace Blog.Core.Api.Controllers
                     //开启事务
                     _unitOfWorkManage.BeginTran();
                     var id = await _nightscoutServices.Add(request);
+                    request.Id = id;
                     await _nightscoutServerServices.Update(nsserver);
                     await _nightscoutServerServices.Db.Updateable<NightscoutServer>().SetColumns("curServiceSerial", nsserver.curServiceSerial).Where(t => t.Id > 0).ExecuteCommandAsync();
                     _unitOfWorkManage.CommitTran();
@@ -257,7 +258,8 @@ namespace Blog.Core.Api.Controllers
                         data.response = id.ObjToString();
                         data.msg = "添加成功";
                         //第一次默认就启动
-                        await _nightscoutServices.RunDocker(request);
+                        await _nightscoutServices.InitData(request, nsserver);
+                        await _nightscoutServices.RunDocker(request, nsserver);
                     }
                     else
                     {
@@ -292,7 +294,9 @@ namespace Blog.Core.Api.Controllers
             }
             if (request.isRefresh)
             {
-                await _nightscoutServices.RunDocker(request);
+                var nsserver = await _nightscoutServerServices.QueryById(request.serverId);
+                await _nightscoutServices.StopDocker(request, nsserver);
+                await _nightscoutServices.RunDocker(request, nsserver);
             }
             return data;
         }
@@ -309,21 +313,28 @@ namespace Blog.Core.Api.Controllers
                 data.msg = "删除成功";
                 data.response = model?.Id.ObjToString();
             }
-            await _nightscoutServices.RunDocker(model, true);
+            var nsserver = await _nightscoutServerServices.QueryById(model.serverId);
+            await _nightscoutServices.StopDocker(model, nsserver);
+            await _nightscoutServices.DeleteData(model, nsserver);
             return data;
         }
         /// <summary>
         /// 重置数据
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="isInit">是否加载模板数据</param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<MessageModel<string>> Reset(long id)
+        public async Task<MessageModel<string>> Reset(long id,bool isInit = true)
         {
             var data = await _nightscoutServices.QueryById(id);
             if (data == null || data.IsDeleted) return MessageModel<string>.Fail("实例不存在");
-            await _nightscoutServices.RunDocker(data, true);
-            await _nightscoutServices.RunDocker(data, false);
+            var nsserver = await _nightscoutServerServices.QueryById(data.serverId);
+            await _nightscoutServices.StopDocker(data, nsserver);
+            await _nightscoutServices.DeleteData(data, nsserver);
+            if (isInit)
+                await _nightscoutServices.InitData(data, nsserver);
+            await _nightscoutServices.RunDocker(data, nsserver);
             return MessageModel<string>.Success("刷新成功");
         }
         /// <summary>
@@ -334,9 +345,10 @@ namespace Blog.Core.Api.Controllers
         [HttpGet]
         public async Task<MessageModel<string>> Stop(long id)
         {
-            var data = await _nightscoutServices.QueryById(id);
-            if (data == null || data.IsDeleted) return MessageModel<string>.Fail("实例不存在");
-            await _nightscoutServices.StopDocker(data);
+            var nightscout = await _nightscoutServices.QueryById(id);
+            if (nightscout == null || nightscout.IsDeleted) return MessageModel<string>.Fail("实例不存在");
+            var nsserver = await _nightscoutServerServices.QueryById(nightscout.serverId);
+            await _nightscoutServices.StopDocker(nightscout, nsserver);
             return MessageModel<string>.Success("停止成功");
         }
         /// <summary>
@@ -349,7 +361,9 @@ namespace Blog.Core.Api.Controllers
         {
             var data = await _nightscoutServices.QueryById(id);
             if (data == null || data.IsDeleted) return MessageModel<string>.Fail("实例不存在");
-            await _nightscoutServices.RunDocker(data);
+            var nsserver = await _nightscoutServerServices.QueryById(data.serverId);
+            await _nightscoutServices.StopDocker(data, nsserver);
+            await _nightscoutServices.RunDocker(data, nsserver);
             return MessageModel<string>.Success("刷新成功");
         }
         /// <summary>
