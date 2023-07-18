@@ -114,6 +114,10 @@ namespace Blog.Core.Model.Models
         /// 当前服务序列
         /// </summary>
         public int serviceSerial { get; set; }
+        /// <summary>
+        /// 是否主动停止
+        /// </summary>
+        public bool isStop { get; set; }
 
 
 

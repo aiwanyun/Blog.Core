@@ -325,15 +325,16 @@ namespace Blog.Core.Api.Controllers
         /// <param name="isInit">是否加载模板数据</param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<MessageModel<string>> Reset(long id,bool isInit = true)
+        public async Task<MessageModel<string>> Reset(long id)
         {
             var data = await _nightscoutServices.QueryById(id);
             if (data == null || data.IsDeleted) return MessageModel<string>.Fail("实例不存在");
             var nsserver = await _nightscoutServerServices.QueryById(data.serverId);
             await _nightscoutServices.StopDocker(data, nsserver);
+
             await _nightscoutServices.DeleteData(data, nsserver);
-            if (isInit)
-                await _nightscoutServices.InitData(data, nsserver);
+            await _nightscoutServices.InitData(data, nsserver);
+
             await _nightscoutServices.RunDocker(data, nsserver);
             return MessageModel<string>.Success("刷新成功");
         }
@@ -349,6 +350,8 @@ namespace Blog.Core.Api.Controllers
             if (nightscout == null || nightscout.IsDeleted) return MessageModel<string>.Fail("实例不存在");
             var nsserver = await _nightscoutServerServices.QueryById(nightscout.serverId);
             await _nightscoutServices.StopDocker(nightscout, nsserver);
+            nightscout.isStop = true;
+            await _nightscoutServices.Update(nightscout, new List<string> { "isStop" });
             return MessageModel<string>.Success("停止成功");
         }
         /// <summary>

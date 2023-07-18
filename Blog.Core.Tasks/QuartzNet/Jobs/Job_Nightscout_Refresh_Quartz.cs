@@ -53,6 +53,7 @@ namespace Blog.Core.Tasks
                 var nights = await _nightscoutServices.Query();
                 foreach (var nightscout in nights)
                 {
+                    if (nightscout.isStop) continue;
                     var nsserver = await _nightscoutServerServices.QueryById(nightscout.serverId);
                     await _nightscoutServices.StopDocker(nightscout, nsserver);
                     await _nightscoutServices.RunDocker(nightscout, nsserver);

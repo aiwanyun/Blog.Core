@@ -1470,7 +1470,7 @@
             <param name="count"></param>
             <returns></returns>
         </member>
-        <member name="M:Blog.Core.Api.Controllers.NightscoutController.Reset(System.Int64,System.Boolean)">
+        <member name="M:Blog.Core.Api.Controllers.NightscoutController.Reset(System.Int64)">
             <summary>
             重置数据
             </summary>

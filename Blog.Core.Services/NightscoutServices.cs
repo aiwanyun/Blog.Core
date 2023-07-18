@@ -54,8 +54,8 @@ namespace Blog.Core.Services
                     //创建用户
                     var grantConnectionMongoString = $"mongodb://{nsserver.mongoLoginName}:{nsserver.mongoLoginPassword}@{nsserver.mongoIp}:{nsserver.mongoPort}";
                     var client = new MongoClient(grantConnectionMongoString);
-                    client.DropDatabase(nightscout.serviceName);
 
+                    client.DropDatabase(nightscout.serviceName);
                     var database = client.GetDatabase(nightscout.serviceName);
                     var deleteUserCommand = new BsonDocument
                     {
