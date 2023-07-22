@@ -58,31 +58,31 @@ namespace Blog.Core.Services
                         var grantConnectionMongoString = $"mongodb://{nsserver.mongoLoginName}:{nsserver.mongoLoginPassword}@{nsserver.mongoIp}:{nsserver.mongoPort}";
                         var client = new MongoClient(grantConnectionMongoString);
 
-                        try
-                        {
-                            client.DropDatabase(nightscout.serviceName);
-                        }
-                        catch (Exception ex)
-                        {
-                            sb.Append($"删除数据库失败:{ex.Message}");
-                        }
+                        //try
+                        //{
+                        //    client.DropDatabase(nightscout.serviceName);
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    sb.Append($"删除数据库失败:{ex.Message}");
+                        //}
                         var database = client.GetDatabase(nightscout.serviceName);
 
-                        try
-                        {
-                            var deleteUserCommand = new BsonDocument
-                        {
-                            { "dropUser", nsserver.mongoLoginName },
-                            { "writeConcern", new BsonDocument("w", 1) }
-                        };
-                            // 执行删除用户的命令
-                            var result = database.RunCommand<BsonDocument>(deleteUserCommand);
+                        //try
+                        //{
+                        //    var deleteUserCommand = new BsonDocument
+                        //    {
+                        //        { "dropUser", nsserver.mongoLoginName },
+                        //        { "writeConcern", new BsonDocument("w", 1) }
+                        //    };
+                        //    // 执行删除用户的命令
+                        //    var result = database.RunCommand<BsonDocument>(deleteUserCommand);
 
-                        }
-                        catch (Exception ex)
-                        {
-                            sb.Append($"删除用户失败:{ex.Message}");
-                        }
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    sb.Append($"删除用户失败:{ex.Message}");
+                        //}
                         try
                         {
                             //创建用户
@@ -122,7 +122,7 @@ namespace Blog.Core.Services
                         }
                         catch (Exception ex)
                         {
-                            sb.Append($"修改参数失败:{ex.Message}");
+                            sb.Append($"创建初始化数据失败:{ex.Message}");
                         }
                     }
                 }
@@ -130,11 +130,9 @@ namespace Blog.Core.Services
             }
             catch (Exception ex)
             {
-                sb.AppendLine(ex.ToString());
-
+                sb.AppendLine($"初始化失败:{ex.Message}");
                 Log.Error(ex.Message);
                 Log.Error(ex.StackTrace);
-
                 log.success = false;
                 throw;
             }
@@ -172,33 +170,31 @@ namespace Blog.Core.Services
                                 using (var cmdMaster = sshMasterClient.CreateCommand(""))
                                 {
                                     var resMaster = cmdMaster.Execute("docker exec -t nginxserver nginx -s reload");
-                                    sb.AppendLine(resMaster);
+                                    sb.AppendLine($"刷新域名:{resMaster}");
                                 }
                             }
                         }
                         else
                         {
-                            sb.AppendLine("NGINX刷新失败");
+                            sb.AppendLine("没有找到nginx服务器");
                         }
                         //停止实例
                         var res = cmd.Execute($"docker stop {nightscout.serviceName}");
-                        sb.AppendLine(res);
+                        sb.AppendLine($"停止实例:{res}");
 
                         //删除实例
                         res = cmd.Execute($"docker rm {nightscout.serviceName}");
-                        sb.AppendLine(res);
+                        sb.AppendLine($"删除实例:{res}");
                     }
                 }
                 log.success = true;
             }
             catch (Exception ex)
             {
-                sb.AppendLine(ex.ToString());
-
+                sb.AppendLine($"停止实例错误:{ex.Message}");
+                log.success = false;
                 Log.Error(ex.Message);
                 Log.Error(ex.StackTrace);
-
-                log.success = false;
                 throw;
             }
             finally
@@ -255,12 +251,11 @@ namespace Blog.Core.Services
             }
             catch (Exception ex)
             {
-                sb.AppendLine(ex.ToString());
+                sb.AppendLine($"删除数据错误:{ex.Message}");
+                log.success = false;
 
                 Log.Error(ex.Message);
                 Log.Error(ex.StackTrace);
-
-                log.success = false;
                 throw;
             }
             finally
@@ -311,7 +306,7 @@ server {{
         proxy_set_header   Host             $host;
         proxy_set_header   X-Real-IP        $remote_addr;
         proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header   X-Forwarded-Proto $scheme;
         proxy_read_timeout 300s;
         proxy_send_timeout 300s;
         proxy_set_header Upgrade $http_upgrade;
@@ -328,7 +323,7 @@ server {{
 
 
                     //这儿会有两种安装方式
-                    //一是按服务器的IP+端口部署
+                    //一是按服务器的IP+端口部署(ns和nginx在同一服务器)
                     //二是按本机实例IP+1337端口部署
 
 
@@ -351,38 +346,40 @@ server {{
                                     using (var cmdMaster = sshMasterClient.CreateCommand(""))
                                     {
                                         var resMaster = cmdMaster.Execute("docker exec -t nginxserver nginx -s reload");
-                                        sb.AppendLine(resMaster);
+                                        sb.AppendLine($"刷新域名:{resMaster}");
                                     }
                                 }
                             }
                             else
                             {
-                                sb.AppendLine("NGINX刷新失败");
+                                sb.AppendLine("没有找到nginx服务器");
                             }
 
                             //停止实例
                             var res = cmd.Execute($"docker stop {nightscout.serviceName}");
-                            sb.AppendLine(res);
+                            sb.AppendLine($"停止实例:{res}");
 
                             //删除实例
                             res = cmd.Execute($"docker rm {nightscout.serviceName}");
-                            sb.AppendLine(res);
+                            sb.AppendLine($"删除实例:{res}");
 
                             //启动实例
                             List<string> args = new List<string>();
                             if (nightscout.exposedPort > 0)
                             {
+                                //外网
                                 args.Add($"docker run -m 100m --cpus=1 --restart=always --net mynet -p {nightscout.exposedPort}:1337 --name {nightscout.serviceName}");
                             }
                             else
                             {
+                                //内网
                                 args.Add($"docker run -m 100m --cpus=1 --restart=always --net mynet --ip {nightscout.instanceIP} --name {nightscout.serviceName}");
                             }
                             args.Add($"-e TZ=Asia/Shanghai");
                             args.Add($"-e NODE_ENV=production");
                             args.Add($"-e INSECURE_USE_HTTP='true'");
 
-                            //数据库链接 默认都是内部链接
+                            //数据库链接
                             var connectionMongoString = $"mongodb://{nsserver.mongoLoginName}:{nsserver.mongoLoginPassword}@{nsserver.mongoIp}:{nsserver.mongoPort}/{nightscout.serviceName}";
 
                             args.Add($"-e MONGO_CONNECTION={connectionMongoString}");
@@ -442,19 +439,17 @@ server {{
                             var cmdStr = string.Join(" ", args);
 
                             res = cmd.Execute(cmdStr);
-                            sb.AppendLine(res);
+                            sb.AppendLine($"启动实例:{res}");
                         }
                     }
                     log.success = true;
                 }
                 catch (Exception ex)
                 {
-                    sb.AppendLine(ex.ToString());
-
+                    sb.AppendLine($"启动实例错误:{ex.Message}");
+                    log.success = false;
                     Log.Error(ex.Message);
                     Log.Error(ex.StackTrace);
-
-                    log.success = false;
 
                     throw;
                 }

@@ -436,18 +436,18 @@ namespace Blog.Core.Api.Controllers
         [AllowAnonymous]
         public async void Push([FromQuery] IFTTT data)
         {
-            Log.Logger.Information($"进入nightscout");
-            Log.Logger.Information($"nightscout原始数据:{JsonConvert.SerializeObject(data)}");
+            Log.Information($"进入nightscout");
+            Log.Information($"nightscout原始数据:{JsonConvert.SerializeObject(data)}");
 
 
             if ("bwp".Equals(data.Value3))
             {
-                Log.Logger.Information("bwp跳过");
+                Log.Information("bwp跳过");
                 return;
             }
             if ("ns-allclear".Equals(data.Value5))
             {
-                Log.Logger.Information("All Clear跳过");
+                Log.Information("All Clear跳过");
                 return;
             }
 
@@ -468,7 +468,7 @@ namespace Blog.Core.Api.Controllers
                 nightscout = await _nightscoutServices.QueryById(data.Value4);
                 if (nightscout == null || nightscout.IsDeleted)
                 {
-                    Log.Logger.Information("nightscout用户未找到");
+                    Log.Information("nightscout用户未找到");
                     return;
                 }
                 pushTemplateID = pushTemplateID_Keep;
@@ -485,7 +485,7 @@ namespace Blog.Core.Api.Controllers
                 nightscout = await _nightscoutServices.QueryById(data.Value4);
                 if (nightscout == null || nightscout.IsDeleted)
                 {
-                    Log.Logger.Information("nightscout用户未找到");
+                    Log.Information("nightscout用户未找到");
                     return;
                 }
                 pushTemplateID = pushTemplateID_Exception;
@@ -503,7 +503,7 @@ namespace Blog.Core.Api.Controllers
             }
             else
             {
-                Log.Logger.Information("暂时跳过其他情况");
+                Log.Information("暂时跳过其他情况");
                 return;
             }
 
@@ -515,7 +515,7 @@ namespace Blog.Core.Api.Controllers
             pushData.info.id = pushWechatID;
             pushData.info.companyCode = pushCompanyCode;
             pushData.info.userID = nightscout.Id.ToString();
-            Log.Logger.Information($"nightscout处理数据:{JsonConvert.SerializeObject(data)}");
+            Log.Information($"nightscout处理数据:{JsonConvert.SerializeObject(data)}");
             await _weChatConfigServices.PushCardMsg(pushData, "");
         }
         [HttpGet]

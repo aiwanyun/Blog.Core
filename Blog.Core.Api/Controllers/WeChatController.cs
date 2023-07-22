@@ -20,8 +20,7 @@ namespace Blog.Core.Controllers
         /// 构造函数
         /// </summary>  
         /// <param name="weChatConfigServices"></param>
-        /// <param name="logger"></param>   
-        public WeChatController(IWeChatConfigServices weChatConfigServices, ILogger<WeChatController> logger)
+        public WeChatController(IWeChatConfigServices weChatConfigServices)
         {
             _weChatConfigServices = weChatConfigServices;
         }

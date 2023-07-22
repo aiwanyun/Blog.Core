@@ -94,8 +94,8 @@ namespace Blog.Core.Tasks
                     }
                     catch (Exception ex)
                     {
-                        Log.Logger.Error($"{nightscout.name}推送失败,{ex.Message}");
-                        Log.Logger.Error(ex.StackTrace);
+                        Log.Error($"{nightscout.name}推送失败,{ex.Message}");
+                        Log.Error(ex.StackTrace);
                     }
                 }
                 if (ls.Count > 0)
@@ -125,8 +125,8 @@ namespace Blog.Core.Tasks
                     }
                     catch (Exception ex)
                     {
-                        Log.Logger.Error($"推送失败,{ex.Message}");
-                        Log.Logger.Error(ex.StackTrace);
+                        Log.Error($"推送失败,{ex.Message}");
+                        Log.Error(ex.StackTrace);
                     }
                 }
 

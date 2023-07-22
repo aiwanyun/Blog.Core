@@ -1150,12 +1150,11 @@
             微信公众号管理 
             </summary>   
         </member>
-        <member name="M:Blog.Core.Controllers.WeChatController.#ctor(Blog.Core.IServices.IWeChatConfigServices,Microsoft.Extensions.Logging.ILogger{Blog.Core.Controllers.WeChatController})">
+        <member name="M:Blog.Core.Controllers.WeChatController.#ctor(Blog.Core.IServices.IWeChatConfigServices)">
             <summary>
             构造函数
             </summary>  
             <param name="weChatConfigServices"></param>
-            <param name="logger"></param>   
         </member>
         <member name="M:Blog.Core.Controllers.WeChatController.GetToken(System.String)">
             <summary>
