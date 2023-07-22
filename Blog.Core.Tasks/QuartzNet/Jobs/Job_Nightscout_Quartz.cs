@@ -1,10 +1,8 @@
 ﻿using Blog.Core.Common;
-using Blog.Core.Common.Helper;
 using Blog.Core.IServices;
 using Blog.Core.IServices.BASE;
 using Blog.Core.Model.Models;
 using Blog.Core.Model.ViewModels;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Quartz;
 using Serilog;

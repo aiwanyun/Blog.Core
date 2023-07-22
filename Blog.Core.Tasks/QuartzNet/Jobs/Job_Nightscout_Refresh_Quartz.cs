@@ -7,6 +7,7 @@ using Blog.Core.Model.ViewModels;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Quartz;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -48,15 +49,60 @@ namespace Blog.Core.Tasks
             if (jobid > 0)
             {
                 JobDataMap data = context.JobDetail.JobDataMap;
-                string pars = data.GetString("JobParam"); 
+                string pars = data.GetString("JobParam");
+                var nsConfig = JsonConvert.DeserializeObject<NightscoutRemindConfig>(pars);
 
                 var nights = await _nightscoutServices.Query();
+                List<string> errCount = new List<string>();
                 foreach (var nightscout in nights)
                 {
-                    if (nightscout.isStop) continue;
-                    var nsserver = await _nightscoutServerServices.QueryById(nightscout.serverId);
-                    await _nightscoutServices.StopDocker(nightscout, nsserver);
-                    await _nightscoutServices.RunDocker(nightscout, nsserver);
+                    try
+                    {
+                        if (nightscout.isStop) continue;
+                        var nsserver = await _nightscoutServerServices.QueryById(nightscout.serverId);
+                        await _nightscoutServices.StopDocker(nightscout, nsserver);
+                        await _nightscoutServices.RunDocker(nightscout, nsserver);
+                    }
+                    catch (Exception ex)
+                    {
+                        errCount.Add(nightscout.name);
+                        Log.Error($"{nightscout.name}-重启实例失败:{ex.Message}");
+                    }
+                }
+                if (errCount.Count > 0)
+                {
+                    try
+                    {
+                        var pushUsers = nsConfig.pushUserIDs.Split(",", StringSplitOptions.RemoveEmptyEntries);
+                        if (pushUsers.Length > 0)
+                        {
+                            var pushWechatID = AppSettings.app(new string[] { "nightscout", "pushWechatID" }).ObjToString();
+                            var pushCompanyCode = AppSettings.app(new string[] { "nightscout", "pushCompanyCode" }).ObjToString();
+                            var pushTemplateID = AppSettings.app(new string[] { "nightscout", "pushTemplateID_Alert" }).ObjToString();
+                            var frontPage = AppSettings.app(new string[] { "nightscout", "FrontPage" }).ObjToString();
+                            foreach (var userid in pushUsers)
+                            {
+                                var pushData = new WeChatCardMsgDataDto();
+                                pushData.cardMsg = new WeChatCardMsgDetailDto();
+                                pushData.cardMsg.keyword1 = $"每周ns重启任务出现失败:{errCount.Count}个";
+                                pushData.cardMsg.keyword2 = string.Join(",", errCount);
+                                pushData.cardMsg.remark = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                                pushData.cardMsg.url = frontPage;
+                                pushData.cardMsg.template_id = pushTemplateID;
+                                pushData.info = new WeChatUserInfo();
+                                pushData.info.id = pushWechatID;
+                                pushData.info.companyCode = pushCompanyCode;
+                                pushData.info.userID = userid;
+                                await _weChatConfigServices.PushCardMsg(pushData, "");
+                            }
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error($"推送失败,{ex.Message}");
+                        Log.Error(ex.StackTrace);
+                    }
                 }
             }
         }

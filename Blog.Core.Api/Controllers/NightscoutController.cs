@@ -15,7 +15,6 @@ using Newtonsoft.Json;
 using Serilog;
 
 using SqlSugar;
-using System.IO;
 using System.Linq.Expressions;
 using System.Net.Http.Headers;
 
@@ -322,7 +321,6 @@ namespace Blog.Core.Api.Controllers
         /// 重置数据
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="isInit">是否加载模板数据</param>
         /// <returns></returns>
         [HttpGet]
         public async Task<MessageModel<string>> Reset(long id)
@@ -667,6 +665,7 @@ namespace Blog.Core.Api.Controllers
         }
         /// <summary>
         /// 绑定小程序
+        /// </summary>
         /// <param name="ticket"></param>
         /// <param name="openid"></param>
         /// <returns></returns>

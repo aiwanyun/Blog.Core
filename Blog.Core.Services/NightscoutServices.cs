@@ -5,22 +5,16 @@ using Blog.Core.Model.Models;
 using Blog.Core.Services.BASE;
 using MongoDB.Driver;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System;
 using System.Threading.Tasks;
 using Serilog;
-using MongoDB.Bson.IO;
-using Newtonsoft.Json;
 using JsonConvert = Newtonsoft.Json.JsonConvert;
-using log4net.Plugin;
 using Blog.Core.Model.ViewModels;
 using System.Linq;
 using Blog.Core.IServices.BASE;
 using Renci.SshNet;
 using System.Text;
-using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
-using System.Threading;
 
 
 namespace Blog.Core.Services
@@ -433,6 +427,17 @@ server {{
 
                             args.Add($"-e AUTH_DEFAULT_ROLES=readable");
                             args.Add($"-e uid={nightscout.Id}");
+
+                            //苹果远程指令
+                            string apKeyID = AppSettings.app(new string[] { "appleRemote", "apKeyID" }).ObjToString();
+                            string apKey = AppSettings.app(new string[] { "appleRemote", "apKey" }).ObjToString();
+                            string teamID = AppSettings.app(new string[] { "appleRemote", "teamID" }).ObjToString();
+                            string env = AppSettings.app(new string[] { "appleRemote", "env" }).ObjToString();
+                            args.Add($"-e LOOP_APNS_KEY_ID='{apKeyID}'");
+                            args.Add($"-e LOOP_APNS_KEY='{apKey}'");
+                            args.Add($"-e LOOP_DEVELOPER_TEAM_ID='{teamID}'");
+                            args.Add($"-e LOOP_PUSH_SERVER_ENVIRONMENT='{env}'");
+
                             //args.Add($"-d nightscout/cgm-remote-monitor:latest");
                             args.Add($"-d mynightscout:latest");
 

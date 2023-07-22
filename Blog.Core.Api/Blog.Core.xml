@@ -1474,7 +1474,6 @@
             重置数据
             </summary>
             <param name="id"></param>
-            <param name="isInit">是否加载模板数据</param>
             <returns></returns>
         </member>
         <member name="M:Blog.Core.Api.Controllers.NightscoutController.Stop(System.Int64)">
@@ -1527,7 +1526,14 @@
             <param name="nsid"></param>
             <returns></returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:Blog.Core.Api.Controllers.NightscoutController.BindQR(System.String,System.String)" -->
+        <member name="M:Blog.Core.Api.Controllers.NightscoutController.BindQR(System.String,System.String)">
+            <summary>
+            绑定小程序
+            </summary>
+            <param name="ticket"></param>
+            <param name="openid"></param>
+            <returns></returns>
+        </member>
         <member name="M:Blog.Core.Api.Controllers.NightscoutController.UnBindQR(System.String)">
             <summary>
             取消绑定小程序
