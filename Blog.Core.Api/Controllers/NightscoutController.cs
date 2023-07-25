@@ -602,7 +602,10 @@ namespace Blog.Core.Api.Controllers
             foreach (var item in data)
             {
                 var row = ls.Find(t => t.serverId == item.Id);
-                item.count = row.count;
+                if (row == null)
+                    item.count = 0;
+                else
+                    item.count = row.count;
             }
             return MessageModel<List<NightscoutServer>>.Success("获取成功", data);
         }
