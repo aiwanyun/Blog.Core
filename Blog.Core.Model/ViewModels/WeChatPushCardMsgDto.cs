@@ -27,5 +27,9 @@ namespace Blog.Core.Model.ViewModels
         /// 推送的数据
         /// </summary>
         public WeChatPushCardMsgDetailDto data { get; set; }
+        /// <summary>
+        /// 小程序
+        /// </summary>
+        public WeChatCardMsgMiniprogram miniprogram { get; set; }
     }
 }

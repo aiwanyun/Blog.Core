@@ -76,5 +76,12 @@ namespace Blog.Core.Model.ViewModels
         /// 跳转连接
         /// </summary>
         public string url { get; set; }
+
+        public WeChatCardMsgMiniprogram miniprogram { get; set; }
+    }
+    public class WeChatCardMsgMiniprogram
+    {
+        public string appid { get; set; }
+        public string pagepath { get; set; }
     }
 }

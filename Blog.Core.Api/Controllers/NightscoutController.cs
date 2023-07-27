@@ -456,6 +456,10 @@ namespace Blog.Core.Api.Controllers
             var pushCompanyCode = AppSettings.app(new string[] { "nightscout", "pushCompanyCode" }).ObjToString();
             var pushTemplateID_Exception = AppSettings.app(new string[] { "nightscout", "pushTemplateID_Exception" }).ObjToString();
             var pushTemplateID_Keep = AppSettings.app(new string[] { "nightscout", "pushTemplateID_Keep" }).ObjToString();
+
+            var miniAppid = AppSettings.app(new string[] { "miniProgram", "appid" }).ObjToString();
+            var miniPath = AppSettings.app(new string[] { "miniProgram", "path" }).ObjToString();
+
             var pushTemplateID = string.Empty;
             var pushData = new WeChatCardMsgDataDto();
             pushData.cardMsg = new WeChatCardMsgDetailDto();
@@ -507,7 +511,7 @@ namespace Blog.Core.Api.Controllers
 
             pushData.cardMsg.url = $"https://{nightscout.url}";
             pushData.cardMsg.template_id = pushTemplateID;
-
+            pushData.cardMsg.miniprogram = new WeChatCardMsgMiniprogram { appid = miniAppid, pagepath = miniPath };
 
             pushData.info = new WeChatUserInfo();
             pushData.info.id = pushWechatID;

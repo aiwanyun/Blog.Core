@@ -3451,6 +3451,11 @@
             推送的数据
             </summary>
         </member>
+        <member name="P:Blog.Core.Model.ViewModels.WeChatPushCardMsgDto.miniprogram">
+            <summary>
+            小程序
+            </summary>
+        </member>
         <member name="T:Blog.Core.Model.ViewModels.WeChatPushCardMsgValueColorDto">
             <summary>
             微信keyword所需Dto

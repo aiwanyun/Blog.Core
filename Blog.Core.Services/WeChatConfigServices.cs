@@ -265,6 +265,11 @@ namespace Blog.Core.Services
                     template_id = msg.cardMsg.template_id,
                     url = msg.cardMsg.url,
                     touser = bindUser.SubUserOpenID,
+                    miniprogram = new WeChatCardMsgMiniprogram
+                    {
+                         appid= msg.cardMsg.miniprogram?.appid,
+                         pagepath = msg.cardMsg.miniprogram?.pagepath
+                    },
                     data = new WeChatPushCardMsgDetailDto
                     {
                         first = new WeChatPushCardMsgValueColorDto
