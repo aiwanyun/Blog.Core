@@ -1462,6 +1462,12 @@
             服务器接口，因为是模板生成，所以首字母是大写的，自己可以重构下
             </summary>
         </member>
+        <member name="M:Blog.Core.Api.Controllers.NightscoutController.Test">
+            <summary>
+            test
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Blog.Core.Api.Controllers.NightscoutController.GenerateNumber(System.Int32)">
             <summary>
             随机生成几位数

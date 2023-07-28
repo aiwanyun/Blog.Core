@@ -50,6 +50,17 @@ namespace Blog.Core.Api.Controllers
             _wechatsubServices = wechatsubServices;
         }
 
+        /// <summary>
+        /// test
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult Test()
+        {
+            GC.Collect();
+            return Ok();
+        }
+
         [HttpGet]
         public async Task<MessageModel<PageModel<Nightscout>>> Get(int page = 1, string key = "", int pageSize = 50)
         {
