@@ -304,13 +304,46 @@ namespace Blog.Core.Api.Controllers
                 data.msg = "更新成功";
                 data.response = request?.Id.ObjToString();
             }
+            bool isDiff = false;
             if (!request.serverId.Equals(old.serverId))
             {
                 //不是同一个服务器需要停掉先前服务器
+
                 var oldNsserver = await _nightscoutServerServices.QueryById(old.serverId);
                 await _nightscoutServices.StopDocker(old, oldNsserver);
+
+                var nsserver = await _nightscoutServerServices.QueryById(request.serverId);
+                if (nsserver.curExposedPort > 0)
+                {
+                    //通过暴露端口访问
+                    nsserver.curExposedPort += 1;
+                    request.exposedPort = nsserver.curExposedPort;
+                    request.instanceIP = nsserver.serverIp;
+                }
+                else
+                {
+                    //通过实例DockerIP访问
+                    nsserver.curInstanceIpSerial += 1;
+                    //192.168.0.{}
+                    nsserver.curInstanceIp = string.Format(nsserver.instanceIpTemplate, nsserver.curInstanceIpSerial);
+                    request.instanceIP = nsserver.curInstanceIp;
+                }
+                _unitOfWorkManage.BeginTran();
+                try
+                {
+                    await _nightscoutServerServices.Update(nsserver);
+                    data.success = await _nightscoutServices.Update(request);
+                    _unitOfWorkManage.CommitTran();
+                }
+                catch (Exception)
+                {
+                    _unitOfWorkManage.RollbackTran();
+                    throw;
+                }
+                await _nightscoutServices.RunDocker(request, nsserver);
+                isDiff = true;
             }
-            if (request.isRefresh)
+            if (request.isRefresh && !isDiff)
             {
                 var nsserver = await _nightscoutServerServices.QueryById(request.serverId);
                 await _nightscoutServices.StopDocker(request, nsserver);
