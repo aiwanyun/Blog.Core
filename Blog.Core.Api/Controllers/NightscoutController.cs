@@ -296,11 +296,19 @@ namespace Blog.Core.Api.Controllers
             var check = await CheckData(request);
             if (!check.success) return check;
             var data = new MessageModel<string>();
+            var old = await _nightscoutServices.QueryById(request.Id);
+            
             data.success = await _nightscoutServices.Update(request);
             if (data.success)
             {
                 data.msg = "更新成功";
                 data.response = request?.Id.ObjToString();
+            }
+            if (!request.serverId.Equals(old.serverId))
+            {
+                //不是同一个服务器需要停掉先前服务器
+                var oldNsserver = await _nightscoutServerServices.QueryById(old.serverId);
+                await _nightscoutServices.StopDocker(old, oldNsserver);
             }
             if (request.isRefresh)
             {
