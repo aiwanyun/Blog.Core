@@ -118,6 +118,11 @@ namespace Blog.Core.Model.Models
         /// 是否主动停止
         /// </summary>
         public bool isStop { get; set; }
+        /// <summary>
+        /// 是否国内解析
+        /// </summary>
+        public bool isChina { get; set; }
+
 
 
 

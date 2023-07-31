@@ -51,7 +51,7 @@ namespace Blog.Core.Api.Controllers
         }
 
         /// <summary>
-        /// test
+        /// 测试GC
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -59,6 +59,42 @@ namespace Blog.Core.Api.Controllers
         {
             GC.Collect();
             return Ok();
+        }
+        /// <summary>
+        /// 添加国内解析
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<MessageModel<string>> ResolveDomain(long id)
+        {
+            var nightscout = await _nightscoutServices.QueryById(id);
+            var isSuccess = await _nightscoutServices.ResolveDomain(nightscout);
+            if (isSuccess)
+            {
+                return MessageModel<string>.Success("添加国内解析成功");
+            }
+            else
+            {
+                return MessageModel<string>.Fail("添加国内解析失败");
+            }
+        }
+        /// <summary>
+        /// 删除国内解析
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<MessageModel<string>> UnResolveDomain(long id)
+        {
+            var nightscout = await _nightscoutServices.QueryById(id);
+            var isSuccess = await _nightscoutServices.UnResolveDomain(nightscout);
+            if (isSuccess)
+            {
+               return MessageModel<string>.Success("删除国内解析成功");
+            }
+            else
+            {
+                return MessageModel<string>.Fail("删除国内解析失败");
+            }
         }
 
         [HttpGet]
@@ -305,7 +341,12 @@ namespace Blog.Core.Api.Controllers
                 data.response = request?.Id.ObjToString();
             }
             bool isDiff = false;
-            if (!request.serverId.Equals(old.serverId))
+            if (!request.url.Equals(old.url))
+            {
+                //域名切换删除加速解析
+               await _nightscoutServices.UnResolveDomain(old);
+            }
+             if (!request.serverId.Equals(old.serverId))
             {
                 //不是同一个服务器需要停掉先前服务器
 

@@ -1464,7 +1464,19 @@
         </member>
         <member name="M:Blog.Core.Api.Controllers.NightscoutController.Test">
             <summary>
-            test
+            测试GC
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Blog.Core.Api.Controllers.NightscoutController.ResolveDomain(System.Int64)">
+            <summary>
+            添加国内解析
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Blog.Core.Api.Controllers.NightscoutController.UnResolveDomain(System.Int64)">
+            <summary>
+            删除国内解析
             </summary>
             <returns></returns>
         </member>

@@ -15,7 +15,10 @@ using Blog.Core.IServices.BASE;
 using Renci.SshNet;
 using System.Text;
 using MongoDB.Bson;
-
+using System.Net.Http;
+using System.Xml.Linq;
+using System.Globalization;
+using Blog.Core.Repository.UnitOfWorks;
 
 namespace Blog.Core.Services
 {
@@ -27,10 +30,93 @@ namespace Blog.Core.Services
 
         private readonly IBaseServices<NightscoutLog> _nightscoutLogServices;
         private readonly IBaseServices<NightscoutServer> _nightscoutServerServices;
-        public NightscoutServices(IBaseServices<NightscoutLog> nightscoutLogServices, IBaseServices<NightscoutServer> nightscoutServerServices)
+        private readonly IUnitOfWorkManage _unitOfWorkManage;
+        public NightscoutServices(IBaseServices<NightscoutLog> nightscoutLogServices, IBaseServices<NightscoutServer> nightscoutServerServices, IUnitOfWorkManage unitOfWorkManage)
         {
             _nightscoutLogServices = nightscoutLogServices;
             _nightscoutServerServices = nightscoutServerServices;
+            _unitOfWorkManage = unitOfWorkManage;
+
+        }
+        public async Task<bool> ResolveDomain (Nightscout nightscout)
+        {
+            NightscoutLog log = new NightscoutLog();
+            string cfKey = AppSettings.app(new string[] { "cf", "key" }).ObjToString();
+            string cfZoomID = AppSettings.app(new string[] { "cf", "zoomID" }).ObjToString();
+            string cfCDN = AppSettings.app(new string[] { "cf", "cdn" }).ObjToString();
+
+            await  UnResolveDomain(nightscout);
+            var client = new HttpClient();
+            //添加
+            var request = new HttpRequestMessage(HttpMethod.Post, $"https://api.cloudflare.com/client/v4/zones/{cfZoomID}/dns_records");
+            request.Headers.Add("Authorization", $"Bearer {cfKey}");
+            CFAddMessageInfo cfAdd = new CFAddMessageInfo();
+            cfAdd.content = cfCDN;
+            cfAdd.name = nightscout.url;
+            cfAdd.proxied = false;
+            cfAdd.type = "CNAME";
+            cfAdd.comment = "自动创建解析";
+            cfAdd.ttl = 1;
+            var content = new StringContent(JsonHelper.ObjToJson(cfAdd), null, "text/plain");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var txt = await response.Content.ReadAsStringAsync();
+            var obj = JsonHelper.JsonToObj<CFMessageInfo>(txt);
+            if (obj.success)
+            {
+                log.content = "添加解析成功";
+            }
+            else
+            {
+                log.content = "添加解析失败";
+            }
+            log.pid = nightscout.Id;
+            log.success = obj.success;
+            await this.Db.Insertable<NightscoutLog>(log).ExecuteCommandAsync();
+            nightscout.isChina = true;
+            await this.Db.Updateable<Nightscout>(nightscout).UpdateColumns(t => new { t.isChina }).ExecuteCommandAsync();
+            return obj.success;
+        }
+        public async Task<bool> UnResolveDomain(Nightscout nightscout)
+        {
+            NightscoutLog log = new NightscoutLog();
+            string cfKey = AppSettings.app(new string[] { "cf", "key" }).ObjToString();
+            string cfZoomID = AppSettings.app(new string[] { "cf", "zoomID" }).ObjToString();
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://api.cloudflare.com/client/v4/zones/{cfZoomID}/dns_records?type=CNAME&name={nightscout.url}");
+            request.Headers.Add("Authorization", $"Bearer {cfKey}");
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var txt = await response.Content.ReadAsStringAsync();
+            var obj = JsonHelper.JsonToObj<CFMessageListInfo>(txt);
+            if (obj.success && obj.result != null && obj.result.Count == 1)
+            {
+                //删除
+                request = new HttpRequestMessage(HttpMethod.Delete, $"https://api.cloudflare.com/client/v4/zones/{cfZoomID}/dns_records/{obj.result[0].id}");
+                request.Headers.Add("Authorization", $"Bearer {cfKey}");
+                response = await client.SendAsync(request);
+                txt = await response.Content.ReadAsStringAsync();
+                var obj2 = JsonHelper.JsonToObj<CFMessageInfo>(txt);
+                if (obj2.success)
+                {
+                    log.content = "删除解析成功";
+                }
+                else
+                {
+                    log.content = "删除解析失败";
+                }
+            }
+            else
+            {
+                log.content = "没有要删除的解析";
+            }
+            log.pid = nightscout.Id;
+            log.success = obj.success;
+            await this.Db.Insertable<NightscoutLog>(log).ExecuteCommandAsync();
+            nightscout.isChina = false;
+            await this.Db.Updateable<Nightscout>(nightscout).UpdateColumns(t => new { t.isChina }).ExecuteCommandAsync();
+            return obj.success;
         }
 
         public async Task InitData(Nightscout nightscout, NightscoutServer nsserver)

@@ -44,6 +44,19 @@ namespace Blog.Core.IServices
         /// <param name="nsserver"></param>
         /// <returns></returns>
         public Task InitData(Nightscout nightscout, NightscoutServer nsserver);
+        /// <summary>
+        /// 添加国内解析
+        /// </summary>
+        /// <param name="nightscout"></param>
+        /// <returns></returns>
+
+        public Task<bool> ResolveDomain(Nightscout nightscout);
+        /// <summary>
+        /// 删除国内解析
+        /// </summary>
+        /// <param name="nightscout"></param>
+        /// <returns></returns>
+        public Task<bool> UnResolveDomain(Nightscout nightscout);
     }
 }
 
