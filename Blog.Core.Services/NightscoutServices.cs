@@ -119,6 +119,8 @@ namespace Blog.Core.Services
                             sb.Append($"创建初始化数据失败:{ex.Message}");
                         }
                     }
+
+                    sshClient.Disconnect();
                 }
 
             }
@@ -166,6 +168,7 @@ namespace Blog.Core.Services
                                     var resMaster = cmdMaster.Execute("docker exec -t nginxserver nginx -s reload");
                                     sb.AppendLine($"刷新域名:{resMaster}");
                                 }
+                                sshMasterClient.Disconnect();
                             }
                         }
                         else
@@ -180,6 +183,7 @@ namespace Blog.Core.Services
                         res = cmd.Execute($"docker rm {nightscout.serviceName}");
                         sb.AppendLine($"删除实例:{res}");
                     }
+                    sshClient.Disconnect();
                 }
                 log.success = true;
             }
@@ -342,6 +346,7 @@ server {{
                                         var resMaster = cmdMaster.Execute("docker exec -t nginxserver nginx -s reload");
                                         sb.AppendLine($"刷新域名:{resMaster}");
                                     }
+                                    sshMasterClient.Disconnect();
                                 }
                             }
                             else
@@ -446,6 +451,8 @@ server {{
                             res = cmd.Execute(cmdStr);
                             sb.AppendLine($"启动实例:{res}");
                         }
+
+                        sshClient.Disconnect();
                     }
                     log.success = true;
                 }
