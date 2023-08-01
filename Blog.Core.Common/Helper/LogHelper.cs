@@ -20,7 +20,6 @@ namespace Blog.Core.Common.Helper
         public static void Error(string msg, Exception exception = null)
         {
             Log.Error(exception, "{msg}", msg);
-            
         }
         public static ILogger  Logger{ 
             get {

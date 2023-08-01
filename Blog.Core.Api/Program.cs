@@ -164,12 +164,12 @@ app.UseDefaultFiles(defaultFilesOptions);
 app.UseStaticFiles();
 app.UseCookiePolicy();
 app.UseStatusCodePages();
-app.UseSerilogRequestLogging(options =>
-{
-    options.MessageTemplate = SerilogRequestUtility.HttpMessageTemplate;
-    options.GetLevel = SerilogRequestUtility.GetRequestLevel;
-    options.EnrichDiagnosticContext = SerilogRequestUtility.EnrichFromRequest;
-});
+//app.UseSerilogRequestLogging(options =>
+//{
+//    options.MessageTemplate = SerilogRequestUtility.HttpMessageTemplate;
+//    options.GetLevel = SerilogRequestUtility.GetRequestLevel;
+//    options.EnrichDiagnosticContext = SerilogRequestUtility.EnrichFromRequest;
+//});
 app.UseRouting();
 
 if (builder.Configuration.GetValue<bool>("AppSettings:UseLoadTest"))
