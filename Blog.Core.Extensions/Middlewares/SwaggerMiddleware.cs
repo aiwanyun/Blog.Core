@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using Serilog;
 using static Blog.Core.Extensions.CustomApiVersion;
+using Blog.Core.Common.Helper;
 
 namespace Blog.Core.Extensions.Middlewares
 {
@@ -31,7 +32,7 @@ namespace Blog.Core.Extensions.Middlewares
                 if (streamHtml.Invoke() == null)
                 {
                     var msg = "index.html的属性，必须设置为嵌入的资源";
-                    Log.Error(msg);
+                    LogHelper.Error(msg);
                     throw new Exception(msg);
                 }
 

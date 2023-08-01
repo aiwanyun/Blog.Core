@@ -25,14 +25,13 @@ public static class SqlSugarAop
             {
                 using (LogContextExtension.Create.SqlAopPushProperty(sqlSugarScopeProvider))
                 {
-                    Log.Information("------------------ \r\n ConnId:[{ConnId}]【SQL语句】: \r\n {Sql}",
-                        config.ConfigId, UtilMethods.GetNativeSql( sql, p));
+                    Helper.LogHelper.Information($"------------------ \r\n ConnId:[{config.ConfigId}]【SQL语句】: \r\n {UtilMethods.GetNativeSql(sql, p)}");
                 }
             }
         }
         catch (Exception e)
         {
-            Log.Error("Error occured OnLogExcuting:" + e);
+            Helper.LogHelper.Error("Error occured OnLogExcuting:" + e);
         }
     }
 

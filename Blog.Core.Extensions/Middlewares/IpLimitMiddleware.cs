@@ -3,6 +3,7 @@ using Blog.Core.Common;
 using Microsoft.AspNetCore.Builder;
 using System;
 using Serilog;
+using Blog.Core.Common.Helper;
 
 namespace Blog.Core.Extensions.Middlewares
 {
@@ -24,7 +25,7 @@ namespace Blog.Core.Extensions.Middlewares
             }
             catch (Exception e)
             {
-                Log.Error($"Error occured limiting ip rate.\n{e.Message}");
+                LogHelper.Error($"Error occured limiting ip rate.\n{e.Message}");
                 throw;
             }
         }

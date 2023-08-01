@@ -66,7 +66,7 @@ namespace Blog.Core.Tasks
                     catch (Exception ex)
                     {
                         errCount.Add(nightscout.name);
-                        Log.Error($"{nightscout.name}-重启实例失败:{ex.Message}");
+                        LogHelper.Error($"{nightscout.name}-重启实例失败:{ex.Message}");
                     }
                 }
                 if (errCount.Count > 0)
@@ -100,8 +100,8 @@ namespace Blog.Core.Tasks
                     }
                     catch (Exception ex)
                     {
-                        Log.Error($"推送失败,{ex.Message}");
-                        Log.Error(ex.StackTrace);
+                        LogHelper.Error($"推送失败,{ex.Message}");
+                        LogHelper.Error(ex.StackTrace);
                     }
                 }
             }

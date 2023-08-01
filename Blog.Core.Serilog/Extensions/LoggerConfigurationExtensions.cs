@@ -32,7 +32,7 @@ public static class LoggerConfigurationExtensions
                     outputTemplate: LogContextStatic.FileMessageTemplate, retainedFileCountLimit: 31)));
         //输出普通日志
         loggerConfiguration = loggerConfiguration.WriteTo.Logger(lg =>
-            lg.FilterRemoveSqlLog().WriteTo.Async(s => s.File(LogContextStatic.Combine(LogContextStatic.BasePathLogs, @"Log.txt"), rollingInterval: RollingInterval.Day,
+            lg.FilterRemoveSqlLog().WriteTo.Async(s => s.File(LogContextStatic.Combine(LogContextStatic.BasePathLogs, @"LogHelper.txt"), rollingInterval: RollingInterval.Day,
                 outputTemplate: LogContextStatic.FileMessageTemplate, retainedFileCountLimit: 31)));
         return loggerConfiguration;
     }

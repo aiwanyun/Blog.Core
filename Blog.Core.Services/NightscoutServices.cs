@@ -213,8 +213,8 @@ namespace Blog.Core.Services
             catch (Exception ex)
             {
                 sb.AppendLine($"初始化失败:{ex.Message}");
-                Log.Error(ex.Message);
-                Log.Error(ex.StackTrace);
+                LogHelper.Error(ex.Message);
+                LogHelper.Error(ex.StackTrace);
                 log.success = false;
                 throw;
             }
@@ -277,8 +277,8 @@ namespace Blog.Core.Services
             {
                 sb.AppendLine($"停止实例错误:{ex.Message}");
                 log.success = false;
-                Log.Error(ex.Message);
-                Log.Error(ex.StackTrace);
+                LogHelper.Error(ex.Message);
+                LogHelper.Error(ex.StackTrace);
                 throw;
             }
             finally
@@ -338,8 +338,8 @@ namespace Blog.Core.Services
                 sb.AppendLine($"删除数据错误:{ex.Message}");
                 log.success = false;
 
-                Log.Error(ex.Message);
-                Log.Error(ex.StackTrace);
+                LogHelper.Error(ex.Message);
+                LogHelper.Error(ex.StackTrace);
                 throw;
             }
             finally
@@ -546,8 +546,8 @@ server {{
                 {
                     sb.AppendLine($"启动实例错误:{ex.Message}");
                     log.success = false;
-                    Log.Error(ex.Message);
-                    Log.Error(ex.StackTrace);
+                    LogHelper.Error(ex.Message);
+                    LogHelper.Error(ex.StackTrace);
 
                     throw;
                 }
@@ -560,8 +560,8 @@ server {{
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message);
-                Log.Error(ex.StackTrace);
+                LogHelper.Error(ex.Message);
+                LogHelper.Error(ex.StackTrace);
                 throw;
             }
         }

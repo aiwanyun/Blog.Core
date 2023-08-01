@@ -1,4 +1,5 @@
 ﻿using Blog.Core.Common;
+using Blog.Core.Common.Helper;
 using Blog.Core.IServices;
 using Blog.Core.IServices.BASE;
 using Blog.Core.Model.Models;
@@ -92,8 +93,8 @@ namespace Blog.Core.Tasks
                     }
                     catch (Exception ex)
                     {
-                        Log.Error($"{nightscout.name}推送失败,{ex.Message}");
-                        Log.Error(ex.StackTrace);
+                        LogHelper.Error($"{nightscout.name}推送失败,{ex.Message}");
+                        LogHelper.Error(ex.StackTrace);
                     }
                 }
                 if (ls.Count > 0)
@@ -123,8 +124,8 @@ namespace Blog.Core.Tasks
                     }
                     catch (Exception ex)
                     {
-                        Log.Error($"推送失败,{ex.Message}");
-                        Log.Error(ex.StackTrace);
+                        LogHelper.Error($"推送失败,{ex.Message}");
+                        LogHelper.Error(ex.StackTrace);
                     }
                 }
 

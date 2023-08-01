@@ -9,6 +9,7 @@ using Serilog.Events;
 using System;
 using System.IO;
 using Blog.Core.Common.Option;
+using Blog.Core.Common.Helper;
 
 namespace Blog.Core.Extensions.ServiceExtensions;
 
@@ -42,7 +43,7 @@ public static class SerilogSetup
             }
         }
 
-        Log.Logger = loggerConfiguration.CreateLogger();
+        LogHelper.Logger = loggerConfiguration.CreateLogger();
 
         //Serilog 内部日志
         var file = File.CreateText(LogContextStatic.Combine($"SerilogDebug{DateTime.Now:yyyyMMdd}.txt"));

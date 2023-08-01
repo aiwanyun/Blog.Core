@@ -1,4 +1,5 @@
 ﻿using Blog.Core.Common;
+using Blog.Core.Common.Helper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -55,7 +56,7 @@ namespace Blog.Core.Extensions
                 }
                 catch (Exception ex)
                 {
-                    Log.Error("Blog.Core.xml和Blog.Core.Model.xml 丢失，请检查并拷贝。\n" + ex.Message);
+                    LogHelper.Error("Blog.Core.xml和Blog.Core.Model.xml 丢失，请检查并拷贝。\n" + ex.Message);
                 }
 
                 // 开启加权小锁

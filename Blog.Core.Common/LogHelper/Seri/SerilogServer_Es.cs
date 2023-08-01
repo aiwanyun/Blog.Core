@@ -18,7 +18,7 @@ namespace Blog.Core.Common.LogHelper
         /// <param name="info"></param>
         public static void WriteLog(string filename, string[] dataParas, bool IsHeader = true, string defaultFolder = "", bool isJudgeJsonFormat = false)
         {
-            Log.Logger = new LoggerConfiguration()
+            Helper.LogHelper.Logger = new LoggerConfiguration()
                 // TCPSink 集成Serilog 使用tcp的方式向elk 输出log日志  LogstashJsonFormatter 这个是按照自定义格式化输出内容
                 .WriteTo.TCPSink(new LogstashJsonFormatter())
                 .MinimumLevel.Debug()
@@ -58,10 +58,10 @@ namespace Blog.Core.Common.LogHelper
                        );
                 }
                 // 展示elk支持输出4种日志级别
-                Log.Information(logContent);
-                //Log.Warning(logContent);
-                //Log.Error(logContent);
-                //Log.Debug(logContent);
+                Helper.LogHelper.Information(logContent);
+                //LogHelper.Warning(logContent);
+                //LogHelper.Error(logContent);
+                //LogHelper.Debug(logContent);
             }
             else
             {
@@ -77,12 +77,12 @@ namespace Blog.Core.Common.LogHelper
         /// <param name="ex"></param>
         public static void WriteErrorLog(string filename, string message, Exception ex)
         {
-            Log.Logger = new LoggerConfiguration()
+            Helper.LogHelper.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
                 .WriteTo.File(Path.Combine($"log/Error/{filename}/", ".txt"), rollingInterval: RollingInterval.Day)
                 .CreateLogger();
-            Log.Error(ex, message);
+            Helper.LogHelper.Error(message, ex);
             Log.CloseAndFlush();
         }
     }

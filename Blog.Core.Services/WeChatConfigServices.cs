@@ -149,19 +149,19 @@ namespace Blog.Core.Services
             string objReturn = null;
             try
             {
-                
-                Log.Information("会话开始");
+               
+                LogHelper.Information("会话开始");
                 if (string.IsNullOrEmpty(validDto.publicAccount)) throw new Exception("没有微信公众号唯一标识id数据");
                 var config = await QueryById(validDto.publicAccount);
                 if (config == null) throw new Exception($"公众号不存在=>{validDto.publicAccount}");
-                Log.Information(JsonHelper.GetJSON<WeChatValidDto>(validDto));
+                LogHelper.Information(JsonHelper.GetJSON<WeChatValidDto>(validDto));
                 var token = config.interactiveToken;//验证用的token 和access_token不一样
                 string[] arrTmp = { token, validDto.timestamp, validDto.nonce };
                 Array.Sort(arrTmp);
                 string combineString = string.Join("", arrTmp);
                 string encryption = MD5Helper.Sha1(combineString).ToLower();
 
-                Log.Information(
+                LogHelper.Information(
                     $"来自公众号:{validDto.publicAccount}\r\n" +
                     $"微信signature:{validDto.signature}\r\n" +
                     $"微信timestamp:{validDto.timestamp}\r\n" +
@@ -194,8 +194,8 @@ namespace Blog.Core.Services
             }
             catch (Exception ex)
             {
-                Log.Information($"会话出错(信息)=>\r\n{ex.Message}");
-                Log.Information($"会话出错(堆栈)=>\r\n{ex.StackTrace}");
+                LogHelper.Information($"会话出错(信息)=>\r\n{ex.Message}");
+                LogHelper.Information($"会话出错(堆栈)=>\r\n{ex.StackTrace}");
                 //返回错误给用户 
                 objReturn = string.Format(@$"<xml><ToUserName><![CDATA[{weChatData?.FromUserName}]]></ToUserName>
                                                     <FromUserName><![CDATA[{weChatData?.ToUserName}]]></FromUserName>
@@ -205,10 +205,10 @@ namespace Blog.Core.Services
             }
             finally
             {
-                Log.Information($"微信get数据=>\r\n{JsonHelper.GetJSON<WeChatValidDto>(validDto)}");
-                Log.Information($"微信post数据=>\r\n{body}");
-                Log.Information($"返回微信数据=>\r\n{objReturn}");
-                Log.Information($"会话结束");
+                LogHelper.Information($"微信get数据=>\r\n{JsonHelper.GetJSON<WeChatValidDto>(validDto)}");
+                LogHelper.Information($"微信post数据=>\r\n{body}");
+                LogHelper.Information($"返回微信数据=>\r\n{objReturn}");
+                LogHelper.Information($"会话结束");
             }
             return objReturn;
         }
@@ -331,7 +331,7 @@ namespace Blog.Core.Services
                 }
                 catch (Exception ex)
                 {
-                    Log.Information($"记录失败\r\n{ex.Message}\r\n{ex.StackTrace}");
+                    LogHelper.Information($"记录失败\r\n{ex.Message}\r\n{ex.StackTrace}");
                 }
                 if (reData.usersData.errcode.Equals(0))
                 {
@@ -898,7 +898,7 @@ namespace Blog.Core.Services
                     item.SubUserRefTime = DateTime.Now;
                 }
                 await BaseDal.Db.Updateable<WeChatSub>(data).UpdateColumns(t => new { t.IsUnBind, t.SubUserRefTime }).ExecuteCommandAsync();
-                Log.Information($"用户解绑成功:{weChat.publicAccount}=>{weChat.FromUserName}");
+                LogHelper.Information($"用户解绑成功:{weChat.publicAccount}=>{weChat.FromUserName}");
                 return @$"<xml><ToUserName><![CDATA[{weChat.FromUserName}]]></ToUserName>
                                 <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
                                 <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>

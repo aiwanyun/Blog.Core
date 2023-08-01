@@ -66,11 +66,11 @@ namespace Blog.Core.Serilog.Es.Sinks.TCP
                 {
                     if (socketError == null)
                     {
-                        //Log.Error(x, "failure inside TCP socket: {message}", x.Message);
+                        //LogHelper.Error(x, "failure inside TCP socket: {message}", x.Message);
                     }
                     else
                     {
-                        //Log.Error(
+                        //LogHelper.Error(
                         //    x,
                         //    "failure inside TCP socket: {message} - socket error found {socketErrorCode}",
                         //    x.Message,
@@ -244,7 +244,7 @@ namespace Blog.Core.Serilog.Es.Sinks.TCP
             {
                 try
                 {
-                    //Log.Debug("Attempting to connect to TCP endpoint {host} after delay of {delay} seconds", host, delay);
+                    //LogHelper.Debug("Attempting to connect to TCP endpoint {host} after delay of {delay} seconds", host, delay);
                     return await connect(host);
                 }
                 catch (SocketException) { }

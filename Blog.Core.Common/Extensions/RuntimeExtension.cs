@@ -29,7 +29,7 @@ public static class RuntimeExtension
 			}
 			catch (Exception e)
 			{
-				Log.Debug(e, "GetAllAssemblies Exception:{ex}", e.Message);
+				Helper.LogHelper.Debug($"GetAllAssemblies Exception:{e.Message}", e);
 			}
 		}
 
