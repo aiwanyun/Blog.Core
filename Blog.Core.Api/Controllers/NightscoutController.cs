@@ -610,8 +610,8 @@ namespace Blog.Core.Api.Controllers
             pushData.info.id = pushWechatID;
             pushData.info.companyCode = pushCompanyCode;
             pushData.info.userID = nightscout.Id.ToString();
-            LogHelper.Information($"nightscout处理数据:{JsonConvert.SerializeObject(data)}");
             await _weChatConfigServices.PushCardMsg(pushData, "");
+            LogHelper.Information($"nightscout处理数据:{JsonConvert.SerializeObject(data)}");
         }
         [HttpGet]
         public async Task<MessageModel<object>> GetSummary()
