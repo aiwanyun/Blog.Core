@@ -58,14 +58,15 @@ namespace Blog.Core.Extensions
                 cacheType.Add(typeof(BlogLogAOP));
             }
 
-            builder.RegisterGeneric(typeof(BaseRepository<>)).As(typeof(IBaseRepository<>)).InstancePerDependency(); //注册仓储
-            builder.RegisterGeneric(typeof(BaseServices<>)).As(typeof(IBaseServices<>)).InstancePerDependency();     //注册服务
+            builder.RegisterGeneric(typeof(BaseRepository<>)).As(typeof(IBaseRepository<>)).InstancePerLifetimeScope().InstancePerDependency(); //注册仓储
+            builder.RegisterGeneric(typeof(BaseServices<>)).As(typeof(IBaseServices<>)).InstancePerLifetimeScope().InstancePerDependency();     //注册服务
 
             // 获取 Service.dll 程序集服务，并注册
             var assemblysServices = Assembly.LoadFrom(servicesDllFile);
             builder.RegisterAssemblyTypes(assemblysServices)
                 .AsImplementedInterfaces()
                 .InstancePerDependency()
+                .InstancePerLifetimeScope()
                 .PropertiesAutowired()
                 .EnableInterfaceInterceptors()       //引用Autofac.Extras.DynamicProxy;
                 .InterceptedBy(cacheType.ToArray()); //允许将拦截器服务的列表分配给注册。
@@ -75,6 +76,7 @@ namespace Blog.Core.Extensions
             builder.RegisterAssemblyTypes(assemblysRepository)
                 .AsImplementedInterfaces()
                 .PropertiesAutowired()
+                .InstancePerLifetimeScope()
                 .InstancePerDependency();
 
             builder.RegisterType<UnitOfWorkManage>().As<IUnitOfWorkManage>()
