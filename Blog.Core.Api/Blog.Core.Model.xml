@@ -691,6 +691,11 @@
             是否国内解析
             </summary>
         </member>
+        <member name="P:Blog.Core.Model.Models.Nightscout.money">
+            <summary>
+            金额
+            </summary>
+        </member>
         <member name="T:Blog.Core.Model.Models.NightscoutLog">
             <summary>
             血糖管理实例日志

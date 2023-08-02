@@ -122,6 +122,10 @@ namespace Blog.Core.Model.Models
         /// 是否国内解析
         /// </summary>
         public bool isChina { get; set; }
+        /// <summary>
+        /// 金额
+        /// </summary>
+        public double money { get; set; }
 
 
 
