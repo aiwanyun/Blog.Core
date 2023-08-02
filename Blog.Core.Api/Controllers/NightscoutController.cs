@@ -920,7 +920,8 @@ namespace Blog.Core.Api.Controllers
             var database = client.GetDatabase(serviceName);
             var collection = database.GetCollection<MongoDB.Bson.BsonDocument>("entries"); // 替换为你的集合名称
 
-            var filter = Builders<MongoDB.Bson.BsonDocument>.Filter.Empty; // 获取所有数据
+            //var filter = Builders<MongoDB.Bson.BsonDocument>.Filter.Empty; // 获取所有数据.Eq("name", "John");
+            var filter = Builders<MongoDB.Bson.BsonDocument>.Filter.Gt("sgv", 0);
             var projection = Builders<MongoDB.Bson.BsonDocument>.Projection.Include("date").Include("sgv").Include("direction").Exclude("_id");
 
 
