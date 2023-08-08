@@ -2,6 +2,7 @@
 using Blog.Core.IServices;
 using Microsoft.Extensions.Logging;
 using Quartz;
+using System;
 using System.Threading.Tasks;
 
 /// <summary>
@@ -9,10 +10,10 @@ using System.Threading.Tasks;
 /// </summary>
 namespace Blog.Core.Tasks
 {
-    public class Job_SQL_Quartz : JobBase, IJob
+    public class Job_CleanSQL_Quartz : JobBase, IJob
     {
 
-        public Job_SQL_Quartz(ITasksQzServices tasksQzServices, ITasksLogServices tasksLogServices)
+        public Job_CleanSQL_Quartz(ITasksQzServices tasksQzServices, ITasksLogServices tasksLogServices)
             : base(tasksQzServices, tasksLogServices)
         {
             _tasksQzServices = tasksQzServices;
@@ -31,6 +32,7 @@ namespace Blog.Core.Tasks
             {
                 JobDataMap data = context.JobDetail.JobDataMap;
                 string pars = data.GetString("JobParam");
+                pars = string.Format(pars, DateTime.Now.ToString("yyyyMM01"));
                 await _tasksQzServices.Db.Ado.ExecuteCommandAsync(pars);
             }
         }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Blog.Core.Model.ViewModels
 {
-    public class IFTTT
+    public class BloodInfo
     {
         public string Value1 { get; set; }
         public string Value2 { get; set; }

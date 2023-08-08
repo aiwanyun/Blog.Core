@@ -6,7 +6,7 @@ using Serilog.Events;
 
 namespace Blog.Core.Serilog.Utility;
 
-public class SerilogRequestUtility
+public static class SerilogRequestUtility
 {
 	public const string HttpMessageTemplate =
 		"HTTP {RequestMethod} {RequestPath} QueryString:{QueryString} Body:{Body}  responded {StatusCode} in {Elapsed:0.0000} ms";
@@ -29,7 +29,8 @@ public class SerilogRequestUtility
 	private static LogEventLevel IgnoreRequest(HttpContext ctx)
 	{
 		var path = ctx.Request.Path.Value;
-		if (path.IsNullOrEmpty())
+		
+		if (string.IsNullOrWhiteSpace(path))
 		{
 			return LogEventLevel.Information;
 		}

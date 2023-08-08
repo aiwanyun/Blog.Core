@@ -84,7 +84,7 @@ namespace Blog.Core.Hubs
             if (AppSettings.app(new string[] { "Middleware", "SignalRSendLog", "Enabled" }).ObjToBool())
             {
                 //TODO 主动发送错误消息
-                //await Clients.All.ReceiveUpdate(LogLock.GetLogData());
+                await Clients.All.ReceiveUpdate(LogLock.GetLogData());
             }
 
 

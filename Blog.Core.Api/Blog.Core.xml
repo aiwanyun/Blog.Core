@@ -186,6 +186,7 @@
             <param name="roleServices"></param>
             <param name="requirement"></param>
             <param name="roleModulePermissionServices"></param>
+            <param name="logger"></param>
         </member>
         <member name="M:Blog.Core.Controllers.LoginController.GetJwtStr(System.String,System.String)">
             <summary>
@@ -1260,12 +1261,6 @@
             WeChatKeywordController
             </summary>
         </member>
-        <member name="M:Blog.Core.Controllers.WeChatKeywordController.#ctor(Blog.Core.IServices.BASE.IBaseServices{Blog.Core.Model.Models.WeChatKeyword},Blog.Core.IServices.IWeChatConfigServices)">
-            <summary>
-            构造函数
-            </summary> 
-            <param name="wechatKeywordServices"></param> 
-        </member>
         <member name="M:Blog.Core.Controllers.WeChatKeywordController.Get(Blog.Core.Model.PaginationModel)">
             <summary>
             获取
@@ -1530,12 +1525,6 @@
             <param name="page"></param>
             <param name="pageSize"></param>
             <returns></returns>
-        </member>
-        <member name="M:Blog.Core.Api.Controllers.NightscoutController.Push(Blog.Core.Model.ViewModels.IFTTT)">
-            <summary>
-            
-            </summary>
-            <param name="data">数据</param>
         </member>
         <member name="M:Blog.Core.Api.Controllers.NightscoutController.GetBindQR(System.Int64)">
             <summary>

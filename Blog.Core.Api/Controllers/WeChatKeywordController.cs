@@ -4,7 +4,6 @@ using Blog.Core.IServices.BASE;
 using Blog.Core.Model;
 using Blog.Core.Model.Models;
 using Blog.Core.Model.ViewModels;
-using Blog.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,10 +19,6 @@ namespace Blog.Core.Controllers
     {
         readonly IBaseServices<WeChatKeyword> _wechatKeywordServices;
         private readonly IWeChatConfigServices _weChatConfigServices;
-        /// <summary>
-        /// 构造函数
-        /// </summary> 
-        /// <param name="wechatKeywordServices"></param> 
         public WeChatKeywordController(IBaseServices<WeChatKeyword> wechatKeywordServices, IWeChatConfigServices weChatConfigServices)
         {
             _wechatKeywordServices = wechatKeywordServices;

@@ -1,5 +1,4 @@
-﻿using Blog.Core.IRepository.Base;
-using Blog.Core.IServices;
+﻿using Blog.Core.IServices;
 using Blog.Core.Model.Models;
 using Blog.Core.Services.BASE;
 
@@ -10,8 +9,8 @@ namespace Blog.Core.Services
         public void ReturnExp()
         {
 
-            int a = 1;
-            int b = 0;
+            //int a = 1;
+            //int b = 0;
 
           //  int c = a / b;
         }

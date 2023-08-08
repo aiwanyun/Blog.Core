@@ -1,14 +1,12 @@
 ﻿using Blog.Core.Model.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Security.Policy;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -69,8 +67,6 @@ namespace Blog.Core.Common.Helper
                 data = br.ReadBytes((int)inputStream.Length);
             // 设置参数  
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            CookieContainer cookieContainer = new CookieContainer();
-            request.CookieContainer = cookieContainer;
             request.AllowAutoRedirect = true;
             request.Method = "POST";
             string boundary = DateTime.Now.Ticks.ToString("X"); // 隨機分隔線

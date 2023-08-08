@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Newtonsoft.Json;
-using Serilog;
 
 using SqlSugar;
 using System.Linq.Expressions;
@@ -512,20 +511,9 @@ namespace Blog.Core.Api.Controllers
                 response = await _nightscoutLogServices.QueryPage(whereExpression, page, pageSize, "Id desc")
             };
         }
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="Value1">名称</param>
-        ///// <param name="Value2">血糖值和预测值</param>
-        ///// <param name="Value3">类型</param>
-        ///// <param name="Value4">用户id</param>
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="data">数据</param>
         [HttpGet]
         [AllowAnonymous]
-        public async void Push([FromQuery] IFTTT data)
+        public async void Push([FromQuery] BloodInfo data)
         {
             LogHelper.Information($"进入nightscout");
             LogHelper.Information($"nightscout原始数据:{JsonConvert.SerializeObject(data)}");

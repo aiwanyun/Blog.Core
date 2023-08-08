@@ -29,7 +29,5 @@ public static class HttpResponseExceptions
 			//实际上只是个包装类,内部使用了HttpResponsePipeWriter write
 			throw new ApplicationException("The response body is not a FluentHttpResponseStream");
 		}
-		
-		return default;
 	}
 }
