@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -39,8 +38,7 @@ namespace Blog.Core.Common.Helper
             using HttpContent content = new StreamContent(inputStream);
             var httpResponse = await client.PostAsync(url, content);
             var txt = await httpResponse.Content.ReadAsStringAsync();
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return data;
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
         }
         /// <summary>
         /// 新增素材/上传多媒体文件(永久)
@@ -112,8 +110,7 @@ namespace Blog.Core.Common.Helper
             Stream instream = response.GetResponseStream();
             StreamReader sr = new StreamReader(instream, Encoding.UTF8);
             string txt = await sr.ReadToEndAsync();
-            var res = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return res;
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
 
 
             //using var client = new HttpClient();
@@ -148,8 +145,7 @@ namespace Blog.Core.Common.Helper
             string url = $"https://api.weixin.qq.com/cgi-bin/material/get_material?access_token={token}";
             var obj = new { media_id = media_id };
             var txt = await HttpHelper.PostAsync(url, JsonConvert.SerializeObject(obj));
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return data;
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
         }
 
         /// <summary>
@@ -164,8 +160,7 @@ namespace Blog.Core.Common.Helper
             string url = $"https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token={token}"; 
             var obj = new { type = type, offset =(page - 1) *size, count =size};
             var txt = await HttpHelper.PostAsync(url,JsonConvert.SerializeObject(obj));
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return data;
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
         }
         /// <summary>
         /// 通过绑定票据获取公众号关注二维码
@@ -176,8 +171,7 @@ namespace Blog.Core.Common.Helper
         {
             string url = $"https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket={ticket}"; 
             var txt = await HttpHelper.GetAsync(url);
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return data;
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
         }
         /// <summary>
         /// 获取临时关注二维码
@@ -188,8 +182,7 @@ namespace Blog.Core.Common.Helper
         {
             string url = $"https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token={token}";
             var txt = await HttpHelper.PostAsync(url, jsonData);
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return data;
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
         }
         /// <summary>
         /// 获取关注的公众号用户openid(获取所有OpenID)
@@ -201,7 +194,7 @@ namespace Blog.Core.Common.Helper
         { 
             string url = $"https://api.weixin.qq.com/cgi-bin/user/get?access_token={token}"; 
             var txt = await HttpHelper.GetAsync(url);
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
+            var data = JsonHelper.JsonToObj<WeChatApiDto>(txt);
             if (data.data == null) data.data = new WeChatOpenIDsDto();
             if(!string.IsNullOrEmpty(data.next_openid))
                 await GetUsers(token, data.next_openid, data.data.openid);
@@ -217,7 +210,7 @@ namespace Blog.Core.Common.Helper
         {
             string url = $"https://api.weixin.qq.com/cgi-bin/user/get?access_token={token}&next_openid={nextUser}";
             var txt = await HttpHelper.GetAsync(url);
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
+            var data = JsonHelper.JsonToObj<WeChatApiDto>(txt);
             if (data.data != null && data.data.openid != null)
                 users.AddRange(data.data.openid);
             if (!string.IsNullOrEmpty(data.next_openid))
@@ -232,8 +225,7 @@ namespace Blog.Core.Common.Helper
         {
             string url = $"https://api.weixin.qq.com/cgi-bin/menu/get?access_token={token}";  
             var txt = await HttpHelper.GetAsync(url);
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return data;
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
         }
         /// <summary>
         /// 转换微信菜单按钮为事件的按钮
@@ -283,8 +275,7 @@ namespace Blog.Core.Common.Helper
         {
             string url = $"https://api.weixin.qq.com/cgi-bin/menu/create?access_token={token}";
             var txt = await HttpHelper.PostAsync(url, jsonMenu);
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return data;
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
         }
         /// <summary>
         /// 删除菜单内容
@@ -295,8 +286,7 @@ namespace Blog.Core.Common.Helper
         {
             string url = $"https://api.weixin.qq.com/cgi-bin/menu/delete?access_token={token}"; 
             var txt = await HttpHelper.GetAsync(url);
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return data;
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
         }
         /// <summary>
         /// 发送普通消息(群发所有人,单人发送也可以)
@@ -308,8 +298,7 @@ namespace Blog.Core.Common.Helper
         {
             string url = $"https://api.weixin.qq.com/cgi-bin/message/mass/sendall?access_token={token}";
             var txt = await HttpHelper.PostAsync(url, jsonData);
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return data;
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
         }
         /// <summary>
         /// 发送普通消息(单个人-24小时内用户跟微信公众号有互动才会推送成功)
@@ -321,8 +310,7 @@ namespace Blog.Core.Common.Helper
         {
             string url = $"https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={token}";
             var txt = await HttpHelper.PostAsync(url, jsonData);
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return data;
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
         }
         /// <summary>
         /// 发送卡片消息模板
@@ -334,8 +322,7 @@ namespace Blog.Core.Common.Helper
         {
             string url = $"https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={token}";
             var txt = await HttpHelper.PostAsync(url, jsonData);
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return data;
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
         }
         /// <summary>
         /// 拉取普通access_token
@@ -348,9 +335,8 @@ namespace Blog.Core.Common.Helper
             string url = $"https://api.weixin.qq.com/cgi-bin/stable_token";
 
             WeChatToken weChatToken = new WeChatToken { appid = appid, secret = appsecret, grant_type = "client_credential" };
-            var txt = await HttpHelper.PostAsync(url, JsonHelper.GetJSON<WeChatToken>(weChatToken));
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return data;
+            var txt = await HttpHelper.PostAsync(url, JsonHelper.ObjToJson(weChatToken));
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
         }
         /// <summary>
         /// 获取微信服务器IP列表
@@ -361,8 +347,7 @@ namespace Blog.Core.Common.Helper
         {
             string url = $"https://api.weixin.qq.com/cgi-bin/getcallbackip?access_token={token}";
             var txt = await HttpHelper.GetAsync(url);
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return data;
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
         }
         /// <summary>
         /// openid获取微信用户信息 
@@ -374,8 +359,7 @@ namespace Blog.Core.Common.Helper
         {
             string url = $"https://api.weixin.qq.com/cgi-bin/user/info?access_token={token}&openid={openid}&lang=zh_CN";
             var txt = await HttpHelper.GetAsync(url);
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return data;
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
         }
         /// <summary>
         /// openid获取微信用户信息
@@ -386,8 +370,7 @@ namespace Blog.Core.Common.Helper
         {
             string url = $"https://api.weixin.qq.com/sns/userinfo?access_token={token}&openid={openid}&lang=zh_CN"; 
             var txt = await HttpHelper.GetAsync(url);
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return data;
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
         }
         /// <summary>
         /// code换取用户openID
@@ -400,8 +383,7 @@ namespace Blog.Core.Common.Helper
         {
             string url = $"https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}&secret={appsecret}&code={code}&grant_type=authorization_code";
             var txt = await HttpHelper.GetAsync(url);
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return data;
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
         }
         /// <summary>
         /// 获取模板消息
@@ -412,8 +394,7 @@ namespace Blog.Core.Common.Helper
         {
             string url = $"https://api.weixin.qq.com/cgi-bin/template/get_all_private_template?access_token={token}";
             var txt = await HttpHelper.GetAsync(url);
-            var data = JsonHelper.ParseFormByJson<WeChatApiDto>(txt);
-            return data;
+            return JsonHelper.JsonToObj<WeChatApiDto>(txt);
         } 
     }
     public class WeChatToken { 

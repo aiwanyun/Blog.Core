@@ -13,9 +13,7 @@ using Microsoft.Diagnostics.NETCore.Client;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Newtonsoft.Json;
-
 using SqlSugar;
-using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Net.Http.Headers;
 
@@ -604,7 +602,11 @@ namespace Blog.Core.Api.Controllers
             pushData.info.companyCode = pushCompanyCode;
             pushData.info.userID = nightscout.Id.ToString();
             await _weChatConfigServices.PushCardMsg(pushData, "");
-            LogHelper.Information($"nightscout处理数据:{JsonConvert.SerializeObject(data)}");
+            
+
+            pushData = null;
+            nightscout = null;
+            LogHelper.Information($"nightscout处理数据处理完成");
         }
         [HttpGet]
         public async Task<MessageModel<object>> GetSummary()

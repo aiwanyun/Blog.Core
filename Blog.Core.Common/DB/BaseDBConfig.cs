@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Blog.Core.Common.DB
 {
-    public class BaseDBConfig
+    public static class BaseDBConfig
     {
         public static readonly List<ConnectionConfig> AllConfigs = new();           //所有库配置
         public static readonly List<SlaveConnectionConfig> AllSlaveConfigs = new(); //从库配置

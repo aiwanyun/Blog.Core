@@ -1,14 +1,12 @@
 ﻿using Blog.Core.Common;
 using Blog.Core.Common.Helper;
 using Blog.Core.Common.Static;
-using Blog.Core.IRepository.Base;
 using Blog.Core.IServices;
 using Blog.Core.Model;
 using Blog.Core.Model.ViewModels;
 using Blog.Core.Services.BASE;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -172,7 +170,7 @@ namespace Blog.Core.Services
             }
             finally
             {
-                LogHelper.Information($"返回数据->{JsonHelper.GetJSON<MessageModel<PayReturnResultModel>>(messageModel)}");
+                LogHelper.Information($"返回数据->{JsonHelper.ObjToJson(messageModel)}");
                 LogHelper.Information("支付结束");
             }
             return messageModel;
@@ -252,7 +250,7 @@ namespace Blog.Core.Services
             }
             finally
             {
-                LogHelper.Information($"返回数据->{JsonHelper.GetJSON<MessageModel<PayRefundReturnResultModel>>(messageModel)}");
+                LogHelper.Information($"返回数据->{JsonHelper.ObjToJson(messageModel)}");
                 LogHelper.Information("退款结束");
                 
             }
@@ -399,7 +397,7 @@ namespace Blog.Core.Services
             }
             finally
             {
-                LogHelper.Information($"返回数据->{JsonHelper.GetJSON<MessageModel<PayReturnResultModel>>(messageModel)}");
+                LogHelper.Information($"返回数据->{JsonHelper.ObjToJson(messageModel)}");
                 LogHelper.Information("轮序结束");
             }
             return messageModel;

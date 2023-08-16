@@ -910,21 +910,6 @@
             Values控制器
             </summary>
         </member>
-        <member name="M:Blog.Core.Controllers.ValuesController.#ctor(Blog.Core.IServices.IBlogArticleServices,AutoMapper.IMapper,Blog.Core.IServices.IAdvertisementServices,Blog.Core.Model.Love,Blog.Core.IServices.IRoleModulePermissionServices,Blog.Core.Common.HttpContextUser.IUser,Blog.Core.IServices.IPasswordLibServices,Blog.Core.Common.WebApiClients.HttpApis.IBlogApi,Blog.Core.Common.WebApiClients.HttpApis.IDoubanApi,Blog.Core.Common.Https.HttpPolly.IHttpPollyHelper,Microsoft.Extensions.Options.IOptions{Blog.Core.Common.Option.SeqOptions})">
-            <summary>
-            ValuesController
-            </summary>
-            <param name="blogArticleServices"></param>
-            <param name="mapper"></param>
-            <param name="advertisementServices"></param>
-            <param name="love"></param>
-            <param name="roleModulePermissionServices"></param>
-            <param name="user"></param>
-            <param name="passwordLibServices"></param>
-            <param name="blogApi"></param>
-            <param name="doubanApi"></param>
-            <param name="httpPollyHelper"></param>
-        </member>
         <member name="M:Blog.Core.Controllers.ValuesController.TestSqlsugarWithCache">
             <summary>
             测试SqlSugar二级缓存
@@ -1456,12 +1441,6 @@
             <summary>
             服务器接口，因为是模板生成，所以首字母是大写的，自己可以重构下
             </summary>
-        </member>
-        <member name="M:Blog.Core.Api.Controllers.NightscoutController.Test">
-            <summary>
-            测试GC
-            </summary>
-            <returns></returns>
         </member>
         <member name="M:Blog.Core.Api.Controllers.NightscoutController.ResolveDomain(System.Int64)">
             <summary>

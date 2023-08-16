@@ -44,19 +44,6 @@ namespace Blog.Core.Controllers
         private readonly IHttpPollyHelper _httpPollyHelper;
         private readonly SeqOptions _seqOptions;
 
-        /// <summary>
-        /// ValuesController
-        /// </summary>
-        /// <param name="blogArticleServices"></param>
-        /// <param name="mapper"></param>
-        /// <param name="advertisementServices"></param>
-        /// <param name="love"></param>
-        /// <param name="roleModulePermissionServices"></param>
-        /// <param name="user"></param>
-        /// <param name="passwordLibServices"></param>
-        /// <param name="blogApi"></param>
-        /// <param name="doubanApi"></param>
-        /// <param name="httpPollyHelper"></param>
         public ValuesController(IBlogArticleServices blogArticleServices
             , IMapper mapper
             , IAdvertisementServices advertisementServices
@@ -163,7 +150,7 @@ namespace Blog.Core.Controllers
 
 
             // 测试模拟异常，全局异常过滤器拦截
-            var i = 0;
+            //var i = 0;
             // var d = 3 / i;
 
 

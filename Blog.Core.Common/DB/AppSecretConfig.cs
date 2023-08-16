@@ -2,7 +2,7 @@
 
 namespace Blog.Core.Common.AppConfig
 {
-    public class AppSecretConfig
+    public static class AppSecretConfig
     {
         private static string Audience_Secret = AppSettings.app(new string[] { "Audience", "Secret" });
         private static string Audience_Secret_File = AppSettings.app(new string[] { "Audience", "SecretFile" });

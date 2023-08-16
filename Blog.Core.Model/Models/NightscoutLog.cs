@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Blog.Core.Model.Models.RootTkey;
+﻿using Blog.Core.Model.Models.RootTkey;
 using SqlSugar;
 
 namespace Blog.Core.Model.Models

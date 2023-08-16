@@ -43,7 +43,7 @@ namespace Blog.Core.Filter
                 json.msgDev = context.Exception.StackTrace;//堆栈信息
             }
             var res = new ContentResult();
-            res.Content = JsonHelper.GetJSON<MessageModel<string>>(json);
+            res.Content = JsonHelper.ObjToJson(json);
 
             context.Result = res;
 

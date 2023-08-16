@@ -2,7 +2,7 @@
 
 namespace Blog.Core.Serilog.Es
 {
-    public class AppSettingsFileNameConfig
+    public static class AppSettingsFileNameConfig
     {
         /// <summary>
         /// 配置文件名称常量

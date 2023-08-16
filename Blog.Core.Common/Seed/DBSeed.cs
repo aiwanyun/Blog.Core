@@ -18,7 +18,7 @@ using Blog.Core.Common.Const;
 
 namespace Blog.Core.Common.Seed
 {
-    public class DBSeed
+    public static class DBSeed
     {
         private static string SeedDataFolder = "BlogCore.Data.json/{0}.tsv";
 

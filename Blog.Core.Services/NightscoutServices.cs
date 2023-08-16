@@ -7,8 +7,6 @@ using MongoDB.Driver;
 using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
-using Serilog;
-using JsonConvert = Newtonsoft.Json.JsonConvert;
 using Blog.Core.Model.ViewModels;
 using System.Linq;
 using Blog.Core.IServices.BASE;
@@ -16,8 +14,6 @@ using Renci.SshNet;
 using System.Text;
 using MongoDB.Bson;
 using System.Net.Http;
-using System.Xml.Linq;
-using System.Globalization;
 using Blog.Core.Repository.UnitOfWorks;
 
 namespace Blog.Core.Services
@@ -504,7 +500,7 @@ server {{
                             List<string> pluginsArr;
                             try
                             {
-                                var pluginsNights = JsonConvert.DeserializeObject<List<string>>(nightscout.plugins.ObjToString());
+                                var pluginsNights = JsonHelper.JsonToObj<List<string>>(nightscout.plugins.ObjToString());
                                 if (pluginsNights != null && pluginsNights.Count > 0)
                                 {
                                     pluginsArr = pluginsNights;

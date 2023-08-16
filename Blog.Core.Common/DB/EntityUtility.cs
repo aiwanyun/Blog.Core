@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace Blog.Core.Common.DB;
 
-public class EntityUtility
+public static class EntityUtility
 {
     private static readonly Lazy<Dictionary<string, List<Type>>> _tenantEntitys = new(() =>
     {

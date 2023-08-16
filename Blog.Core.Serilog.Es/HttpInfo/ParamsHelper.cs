@@ -11,7 +11,7 @@ namespace Blog.Core.Serilog.Es.HttpInfo
     /// <summary>
     /// 获取参数帮助类
     /// </summary>
-    public class ParamsHelper
+    public static class ParamsHelper
     {
         /// <summary>
         /// 获取参数值

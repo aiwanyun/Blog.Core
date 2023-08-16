@@ -1,5 +1,4 @@
-﻿using Serilog;
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -9,7 +8,7 @@ namespace Blog.Core.Common.Helper
     /// <summary>
     /// httpclinet请求方式，请尽量使用IHttpClientFactory方式
     /// </summary>
-    public class HttpHelper
+    public static class HttpHelper
     {
         public static async Task<string> GetAsync(string serviceAddress)
         {

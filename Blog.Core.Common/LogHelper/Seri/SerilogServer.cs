@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Blog.Core.Common.LogHelper
 {
-    public class SerilogServer
+    public static class SerilogServer
     {
         /// <summary>
         /// 记录日常日志

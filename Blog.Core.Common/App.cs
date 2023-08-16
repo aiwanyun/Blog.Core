@@ -15,7 +15,7 @@ using System.Reflection;
 
 namespace Blog.Core.Common;
 
-public class App
+public static class App
 {
     static App()
     {

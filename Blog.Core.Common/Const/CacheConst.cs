@@ -3,7 +3,7 @@
 /// <summary>
 /// 缓存相关常量
 /// </summary>
-public class CacheConst
+public static class CacheConst
 {
 	/// <summary>
 	/// 用户缓存

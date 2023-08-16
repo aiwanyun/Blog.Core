@@ -1,18 +1,13 @@
-using Blog.Core.Common;
 using Blog.Core.Common.Helper;
-using Blog.Core.IRepository.Base;
 using Blog.Core.IServices;
 using Blog.Core.Model;
 using Blog.Core.Model.Models;
 using Blog.Core.Model.ViewModels;
 using Blog.Core.Services.BASE;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blog.Core.Repository.UnitOfWorks;
-using System.Reflection;
-using Serilog;
 using Blog.Core.IServices.BASE;
 using System.Linq;
 
@@ -154,7 +149,7 @@ namespace Blog.Core.Services
                 if (string.IsNullOrEmpty(validDto.publicAccount)) throw new Exception("没有微信公众号唯一标识id数据");
                 var config = await QueryById(validDto.publicAccount);
                 if (config == null) throw new Exception($"公众号不存在=>{validDto.publicAccount}");
-                LogHelper.Information(JsonHelper.GetJSON<WeChatValidDto>(validDto));
+                LogHelper.Information(JsonHelper.ObjToJson(validDto));
                 var token = config.interactiveToken;//验证用的token 和access_token不一样
                 string[] arrTmp = { token, validDto.timestamp, validDto.nonce };
                 Array.Sort(arrTmp);
@@ -205,7 +200,7 @@ namespace Blog.Core.Services
             }
             finally
             {
-                LogHelper.Information($"微信get数据=>\r\n{JsonHelper.GetJSON<WeChatValidDto>(validDto)}");
+                LogHelper.Information($"微信get数据=>\r\n{JsonHelper.ObjToJson(validDto)}");
                 LogHelper.Information($"微信post数据=>\r\n{body}");
                 LogHelper.Information($"返回微信数据=>\r\n{objReturn}");
                 LogHelper.Information($"会话结束");
@@ -231,7 +226,7 @@ namespace Blog.Core.Services
             WeChatResponseUserInfo reData = new WeChatResponseUserInfo();
             reData.companyCode = info.companyCode;
             reData.id = info.id;
-            var pushJosn = JsonHelper.GetJSON<WeChatQRDto>(push);
+            var pushJosn = JsonHelper.ObjToJson(push);
             var data = await WeChatHelper.GetQRCode(res.response.access_token, pushJosn);
             WeChatQR weChatQR = new WeChatQR
             {
@@ -309,7 +304,8 @@ namespace Blog.Core.Services
                         }
                     }
                 };
-                var pushJson = JsonHelper.GetJSON<WeChatPushCardMsgDto>(pushData);
+                var pushJson = JsonHelper.ObjToJson(pushData);
+                pushData = null;
                 var data = await WeChatHelper.SendCardMsg(res.response.access_token, pushJson);
                 reData.usersData = data;
                 try
@@ -328,6 +324,8 @@ namespace Blog.Core.Services
                         PushLogIP = ip
                     };
                     await BaseDal.Db.Insertable<WeChatPushLog>(pushLog).ExecuteCommandAsync();
+                    pushJson = null;
+                    pushLog = null;
                 }
                 catch (Exception ex)
                 {
@@ -347,6 +345,7 @@ namespace Blog.Core.Services
             { 
                 return MessageModel<WeChatResponseUserInfo>.Success($"卡片消息推送错误=>{ex.Message}", reData); 
             }
+
             
         }
 
