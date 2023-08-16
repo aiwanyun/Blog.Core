@@ -63,6 +63,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.0" />
     <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Diagnostics.NETCore.Client" Version="0.2.430602" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.19.1" />
     <PackageReference Include="SkyAPM.Agent.AspNetCore" Version="2.0.1" />

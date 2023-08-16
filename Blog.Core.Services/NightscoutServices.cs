@@ -76,6 +76,9 @@ namespace Blog.Core.Services
             await this.Db.Insertable<NightscoutLog>(log).ExecuteCommandAsync();
             nightscout.isChina = true;
             await this.Db.Updateable<Nightscout>(nightscout).UpdateColumns(t => new { t.isChina }).ExecuteCommandAsync();
+            client.Dispose();
+            request.Dispose();
+            response.Dispose();
             return obj.success;
         }
         public async Task<bool> UnResolveDomain(Nightscout nightscout)
@@ -90,6 +93,8 @@ namespace Blog.Core.Services
             response.EnsureSuccessStatusCode();
             var txt = await response.Content.ReadAsStringAsync();
             var obj = JsonHelper.JsonToObj<CFMessageListInfo>(txt);
+            request.Dispose();
+            response.Dispose();
             if (obj.success && obj.result != null && obj.result.Count == 1)
             {
                 //删除
@@ -106,6 +111,8 @@ namespace Blog.Core.Services
                 {
                     log.content = "删除解析失败";
                 }
+                request.Dispose();
+                response.Dispose();
             }
             else
             {
@@ -116,6 +123,7 @@ namespace Blog.Core.Services
             await this.Db.Insertable<NightscoutLog>(log).ExecuteCommandAsync();
             nightscout.isChina = false;
             await this.Db.Updateable<Nightscout>(nightscout).UpdateColumns(t => new { t.isChina }).ExecuteCommandAsync();
+            client.Dispose();
             return obj.success;
         }
 

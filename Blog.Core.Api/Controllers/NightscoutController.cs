@@ -9,11 +9,13 @@ using Blog.Core.Model.ViewModels;
 using Blog.Core.Repository.UnitOfWorks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Diagnostics.NETCore.Client;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Newtonsoft.Json;
 
 using SqlSugar;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Net.Http.Headers;
 
@@ -49,15 +51,18 @@ namespace Blog.Core.Api.Controllers
             _wechatsubServices = wechatsubServices;
         }
 
-        /// <summary>
-        /// 测试GC
-        /// </summary>
-        /// <returns></returns>
         [HttpGet]
-        public IActionResult Test()
+        public string Test()
         {
             GC.Collect();
-            return Ok();
+            return "刷新成功";
+        }
+        [HttpGet]
+        public string Test2()
+        {
+            var client = new DiagnosticsClient(Environment.ProcessId);
+            client.WriteDump(DumpType.Full, $"/app/minidump_{DateTime.Now.ToString("yyyyMMddHHmm")}.dmp");
+            return "抓取成功";
         }
         /// <summary>
         /// 添加国内解析
