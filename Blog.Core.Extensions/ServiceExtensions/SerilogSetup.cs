@@ -43,8 +43,6 @@ public static class SerilogSetup
             }
         }
 
-        LogHelper.Logger = loggerConfiguration.CreateLogger();
-
         //Serilog 内部日志
         var file = File.CreateText(LogContextStatic.Combine($"SerilogDebug{DateTime.Now:yyyyMMdd}.txt"));
         SelfLog.Enable(TextWriter.Synchronized(file));

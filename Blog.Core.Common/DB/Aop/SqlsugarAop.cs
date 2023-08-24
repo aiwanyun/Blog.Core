@@ -25,7 +25,7 @@ public static class SqlSugarAop
             {
                 using (LogContextExtension.Create.SqlAopPushProperty(sqlSugarScopeProvider))
                 {
-                    Helper.LogHelper.Information($"------------------ \r\n ConnId:[{config.ConfigId}]【SQL语句】: \r\n {UtilMethods.GetNativeSql(sql, p)}");
+                    Helper.LogHelper.Info($"------------------ \r\n ConnId:[{config.ConfigId}]【SQL语句】: \r\n {UtilMethods.GetNativeSql(sql, p)}");
                 }
             }
         }

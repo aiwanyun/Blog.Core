@@ -27,7 +27,7 @@ namespace Blog.Core.Services
 
         public async Task<MessageModel<PayReturnResultModel>> Pay(PayNeedModel payModel)
         {
-            LogHelper.Information("支付开始");
+            LogHelper.Info("支付开始");
             MessageModel<PayReturnResultModel> messageModel = new MessageModel<PayReturnResultModel>();
             messageModel.response = new PayReturnResultModel();
             string url = string.Empty;
@@ -36,7 +36,7 @@ namespace Blog.Core.Services
             try
             {
 
-                LogHelper.Information($"原始GET参数->{_httpContextAccessor.HttpContext.Request.QueryString}");
+                LogHelper.Info($"原始GET参数->{_httpContextAccessor.HttpContext.Request.QueryString}");
                 //被扫支付 
                 string host = "https://ibsbjstar.ccb.com.cn/CCBIS/B2CMainPlat_00_BEPAY?";
                 ////商户信息
@@ -90,8 +90,8 @@ namespace Blog.Core.Services
                 //拼接请求串
                 url = host + Info + "&ccbParam=" + paramEncryption;
                 //请求 
-                LogHelper.Information($"请求地址->{url}");
-                LogHelper.Information($"请求参数->{param}");
+                LogHelper.Info($"请求地址->{url}");
+                LogHelper.Info($"请求参数->{param}");
                 PayResultModel payResult;
                 try
                 {
@@ -106,12 +106,12 @@ namespace Blog.Core.Services
                         payResult = new PayResultModel { RESULT = "N", ERRMSG = "参数错误", ORDERID = payModel.ORDERID, AMOUNT = payModel.AMOUNT };
                         returnData = StringHelper.GetCusLine(returnData, 15);
                     }
-                    LogHelper.Information($"响应数据->{returnData}");
+                    LogHelper.Info($"响应数据->{returnData}");
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.Information($"异常信息:{ex.Message}");
-                    LogHelper.Information($"异常堆栈:{ex.StackTrace}");
+                    LogHelper.Info($"异常信息:{ex.Message}");
+                    LogHelper.Info($"异常堆栈:{ex.StackTrace}");
                     messageModel = await PayCheck(payModel, 1);
                     return messageModel;
                 }
@@ -165,24 +165,24 @@ namespace Blog.Core.Services
                 messageModel.success = false;
                 messageModel.msg = "服务错误";
                 messageModel.response.ERRMSG = ex.Message;
-                LogHelper.Information($"异常信息:{ex.Message}");
-                LogHelper.Information($"异常堆栈:{ex.StackTrace}");
+                LogHelper.Info($"异常信息:{ex.Message}");
+                LogHelper.Info($"异常堆栈:{ex.StackTrace}");
             }
             finally
             {
-                LogHelper.Information($"返回数据->{JsonHelper.ObjToJson(messageModel)}");
-                LogHelper.Information("支付结束");
+                LogHelper.Info($"返回数据->{JsonHelper.ObjToJson(messageModel)}");
+                LogHelper.Info("支付结束");
             }
             return messageModel;
         }
         public async Task<MessageModel<PayRefundReturnResultModel>> PayRefund(PayRefundNeedModel payModel)
         {
-            LogHelper.Information("退款开始");
+            LogHelper.Info("退款开始");
             MessageModel<PayRefundReturnResultModel> messageModel = new MessageModel<PayRefundReturnResultModel>();
             messageModel.response = new PayRefundReturnResultModel();
             try
             {
-                LogHelper.Information($"原始GET参数->{_httpContextAccessor.HttpContext.Request.QueryString}");
+                LogHelper.Info($"原始GET参数->{_httpContextAccessor.HttpContext.Request.QueryString}");
 
                 string REQUEST_SN = StringHelper.GetGuidToLongID().ToString().Substring(0, 16);//请求序列码
                 string CUST_ID = StaticPayInfo.MERCHANTID;//商户号
@@ -205,8 +205,8 @@ namespace Blog.Core.Services
                 //注意：请求报文必须放在requestXml参数送
                 sRequestMsg = "requestXml=" + sRequestMsg;
 
-                LogHelper.Information("请求地址：" + sUrl);
-                LogHelper.Information("请求报文：" + sRequestMsg);
+                LogHelper.Info("请求地址：" + sUrl);
+                LogHelper.Info("请求报文：" + sRequestMsg);
 
                 HttpClient request = new HttpClient();         
                 byte[] byteRquest = Encoding.GetEncoding("GB18030").GetBytes(sRequestMsg);
@@ -216,7 +216,7 @@ namespace Blog.Core.Services
 
                 StreamReader readerResult = new StreamReader(result, System.Text.Encoding.GetEncoding("GB18030"));
                 string sResult = await readerResult.ReadToEndAsync();
-                LogHelper.Information("响应报文:" + sResult);
+                LogHelper.Info("响应报文:" + sResult);
                 var Xmlresult = XmlHelper.ParseFormByXml<PayRefundReturnModel>(sResult, "TX");
                 if (Xmlresult.RETURN_CODE.Equals("000000"))
                 {
@@ -245,13 +245,13 @@ namespace Blog.Core.Services
                 messageModel.success = false;
                 messageModel.msg = "服务错误";
                 messageModel.response.RETURN_MSG = ex.Message;
-                LogHelper.Information($"异常信息:{ex.Message}");
-                LogHelper.Information($"异常堆栈:{ex.StackTrace}");
+                LogHelper.Info($"异常信息:{ex.Message}");
+                LogHelper.Info($"异常堆栈:{ex.StackTrace}");
             }
             finally
             {
-                LogHelper.Information($"返回数据->{JsonHelper.ObjToJson(messageModel)}");
-                LogHelper.Information("退款结束");
+                LogHelper.Info($"返回数据->{JsonHelper.ObjToJson(messageModel)}");
+                LogHelper.Info("退款结束");
                 
             }
             return messageModel;
@@ -259,7 +259,7 @@ namespace Blog.Core.Services
         }
         public async Task<MessageModel<PayReturnResultModel>> PayCheck(PayNeedModel payModel, int times)
         {
-            LogHelper.Information("轮询开始");
+            LogHelper.Info("轮询开始");
 
             MessageModel<PayReturnResultModel> messageModel = new MessageModel<PayReturnResultModel>();
             messageModel.response = new PayReturnResultModel();
@@ -317,19 +317,19 @@ namespace Blog.Core.Services
                 //拼接请求串
                 url = host + Info + "&ccbParam=" + paramEncryption;
                 //请求
-                LogHelper.Information($"请求地址->{url}");
-                LogHelper.Information($"请求参数->{param}");
+                LogHelper.Info($"请求地址->{url}");
+                LogHelper.Info($"请求参数->{param}");
                 //转换数据
                 PayResultModel payResult;
                 try
                 {
                     returnData = await HttpHelper.PostAsync(url);
-                    LogHelper.Information($"响应数据->{returnData}");
+                    LogHelper.Info($"响应数据->{returnData}");
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.Information($"异常信息:{ex.Message}");
-                    LogHelper.Information($"异常堆栈:{ex.StackTrace}");
+                    LogHelper.Info($"异常信息:{ex.Message}");
+                    LogHelper.Info($"异常堆栈:{ex.StackTrace}");
                     return await PayCheck(payModel, ++times);
                 }
 
@@ -392,13 +392,13 @@ namespace Blog.Core.Services
                 messageModel.success = false;
                 messageModel.msg = "服务错误";
                 messageModel.response.ERRMSG = ex.Message;
-                LogHelper.Information($"异常信息:{ex.Message}");
-                LogHelper.Information($"异常堆栈:{ex.StackTrace}");
+                LogHelper.Info($"异常信息:{ex.Message}");
+                LogHelper.Info($"异常堆栈:{ex.StackTrace}");
             }
             finally
             {
-                LogHelper.Information($"返回数据->{JsonHelper.ObjToJson(messageModel)}");
-                LogHelper.Information("轮序结束");
+                LogHelper.Info($"返回数据->{JsonHelper.ObjToJson(messageModel)}");
+                LogHelper.Info("轮序结束");
             }
             return messageModel;
         }

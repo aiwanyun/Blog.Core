@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Reflection;
 using Newtonsoft.Json;
 
 namespace Blog.Core
@@ -287,6 +290,37 @@ namespace Blog.Core
         public static string ObjToJson(this object value)
         {
             return JsonConvert.SerializeObject(value);
+        }
+        /// <summary>
+        /// 获取
+        /// </summary>
+        /// <param name="enumValue"></param>
+        /// <returns></returns>
+        public static string GetDisplayName(this Enum enumValue)
+        {
+            DisplayAttribute attributeOfType = enumValue.GetAttributeOfType<DisplayAttribute>();
+            if (attributeOfType != null)
+            {
+                return attributeOfType.Name;
+            }
+
+            return enumValue.ToString();
+        }
+
+        /// <summary>
+        /// Gets an attribute on an enum field value.
+        /// </summary>
+        /// <typeparam name="T">The type of the attribute to retrieve.</typeparam>
+        /// <param name="enumValue">The enum value.</param>
+        /// <returns>
+        /// The attribute of the specified type or null.
+        /// </returns>
+        public static T GetAttributeOfType<T>(this Enum enumValue) where T : Attribute
+        {
+            var type = enumValue.GetType();
+            var memInfo = type.GetMember(enumValue.ToString()).First();
+            var attributes = memInfo.GetCustomAttributes<T>(false);
+            return attributes.FirstOrDefault();
         }
     }
 }

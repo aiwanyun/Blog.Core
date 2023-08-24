@@ -518,18 +518,18 @@ namespace Blog.Core.Api.Controllers
         [AllowAnonymous]
         public async void Push([FromQuery] BloodInfo data)
         {
-            LogHelper.Information($"进入nightscout");
-            LogHelper.Information($"nightscout原始数据:{JsonConvert.SerializeObject(data)}");
+            //LogHelper.Info($"进入nightscout");
+            //LogHelper.Info($"nightscout原始数据:{JsonConvert.SerializeObject(data)}");
 
 
             if ("bwp".Equals(data.Value3))
             {
-                LogHelper.Information("bwp跳过");
+                //LogHelper.Info("bwp跳过");
                 return;
             }
             if ("ns-allclear".Equals(data.Value5))
             {
-                LogHelper.Information("All Clear跳过");
+                //LogHelper.Info("All Clear跳过");
                 return;
             }
 
@@ -554,7 +554,7 @@ namespace Blog.Core.Api.Controllers
                 nightscout = await _nightscoutServices.QueryById(data.Value4);
                 if (nightscout == null || nightscout.IsDeleted)
                 {
-                    LogHelper.Information("nightscout用户未找到");
+                    //LogHelper.Info("nightscout用户未找到");
                     return;
                 }
                 pushTemplateID = pushTemplateID_Keep;
@@ -571,7 +571,7 @@ namespace Blog.Core.Api.Controllers
                 nightscout = await _nightscoutServices.QueryById(data.Value4);
                 if (nightscout == null || nightscout.IsDeleted)
                 {
-                    LogHelper.Information("nightscout用户未找到");
+                    //LogHelper.Info("nightscout用户未找到");
                     return;
                 }
                 pushTemplateID = pushTemplateID_Exception;
@@ -589,7 +589,7 @@ namespace Blog.Core.Api.Controllers
             }
             else
             {
-                LogHelper.Information("暂时跳过其他情况");
+                //LogHelper.Info("暂时跳过其他情况");
                 return;
             }
 
@@ -606,7 +606,7 @@ namespace Blog.Core.Api.Controllers
 
             pushData = null;
             nightscout = null;
-            LogHelper.Information($"nightscout处理数据处理完成");
+            //LogHelper.Info($"nightscout处理数据处理完成");
         }
         [HttpGet]
         public async Task<MessageModel<object>> GetSummary()

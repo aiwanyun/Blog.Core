@@ -86,6 +86,26 @@
             用户表
             </summary>
         </member>
+        <member name="T:Blog.Core.Model.LogEnum">
+            <summary>
+            日记录器类型
+            </summary>
+        </member>
+        <member name="F:Blog.Core.Model.LogEnum.GlobalInfo">
+            <summary>
+            全局异常日志
+            </summary>
+        </member>
+        <member name="F:Blog.Core.Model.LogEnum.RequestInfo">
+            <summary>
+            网络请求日志
+            </summary>
+        </member>
+        <member name="F:Blog.Core.Model.LogEnum.AppInfo">
+            <summary>
+            应用程序日志
+            </summary>
+        </member>
         <member name="T:Blog.Core.Model.Love">
             <summary>
             这是爱

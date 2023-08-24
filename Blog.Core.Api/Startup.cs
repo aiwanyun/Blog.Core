@@ -42,7 +42,7 @@ namespace Blog.Core
         {
             // 以下code可能与文章中不一样,对代码做了封装,具体查看右侧 Extensions 文件夹.
             services.AddSingleton(new AppSettings(Configuration));
-            services.AddUiFilesZipSetup(Env);
+            //services.AddUiFilesZipSetup(Env);
 
             Permissions.IsUseIds4 = AppSettings.app(new string[] { "Startup", "IdentityServer4", "Enabled" }).ObjToBool();
             RoutePrefix.Name = AppSettings.app(new string[] { "AppSettings", "SvcName" }).ObjToString();
@@ -50,25 +50,25 @@ namespace Blog.Core
             // 确保从认证中心返回的ClaimType不被更改，不使用Map映射
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-            services.AddCacheSetup();
+            //services.AddCacheSetup();
             services.AddSqlsugarSetup();
             services.AddDbSetup();
             services.AddAutoMapperSetup();
             services.AddCorsSetup();
-            services.AddMiniProfilerSetup();
+            //services.AddMiniProfilerSetup();
             services.AddSwaggerSetup();
             services.AddJobSetup();
             services.AddHttpContextSetup();
             //services.AddAppConfigSetup(Env);
             services.AddAppTableConfigSetup(Env);//表格打印配置
-            services.AddHttpApi();
-            services.AddRedisInitMqSetup();
+            //services.AddHttpApi();
+            //services.AddRedisInitMqSetup();
 
-            services.AddRabbitMQSetup();
-            services.AddKafkaSetup(Configuration);
-            services.AddEventBusSetup();
+            //services.AddRabbitMQSetup();
+            //services.AddKafkaSetup(Configuration);
+            //services.AddEventBusSetup();
 
-            services.AddNacosSetup(Configuration);
+            //services.AddNacosSetup(Configuration);
             services.AddInitializationHostServiceSetup();
             // 授权+认证 (jwt or ids4)
             services.AddAuthorizationSetup();
@@ -145,15 +145,15 @@ namespace Blog.Core
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, MyContext myContext, ITasksQzServices tasksQzServices, ISchedulerCenter schedulerCenter, IHostApplicationLifetime lifetime)
         {
             // Ip限流,尽量放管道外层
-            app.UseIpLimitMiddle();
+            //app.UseIpLimitMiddle();
             // 记录请求与返回数据
-            app.UseRequestResponseLogMiddle();
+            //app.UseRequestResponseLogMiddle();
             // 用户访问记录(必须放到外层，不然如果遇到异常，会报错，因为不能返回流)
-            app.UseRecordAccessLogsMiddle();
+            //app.UseRecordAccessLogsMiddle();
             // signalr
-            app.UseSignalRSendMiddle();
+            //app.UseSignalRSendMiddle();
             // 记录ip请求
-            app.UseIpLogMiddle();
+            //app.UseIpLogMiddle();
             // 查看注入的所有服务
             app.UseAllServicesMiddle(_services);
 
@@ -206,7 +206,7 @@ namespace Blog.Core
             // 然后是授权中间件
             app.UseAuthorization();
             //开启性能分析
-            app.UseMiniProfilerMiddleware();
+            //app.UseMiniProfilerMiddleware();
             // 开启异常中间件，要放到最后
             //app.UseExceptionHandlerMidd();
 

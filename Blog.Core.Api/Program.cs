@@ -61,11 +61,11 @@ builder.Services.AddCacheSetup();
 builder.Services.AddSqlsugarSetup();
 builder.Services.AddDbSetup();
 
-builder.Host.AddSerilogSetup();
-
+//builder.Host.AddSerilogSetup();
+builder.Host.SetLog4Net();
 builder.Services.AddAutoMapperSetup();
 builder.Services.AddCorsSetup();
-builder.Services.AddMiniProfilerSetup();
+//builder.Services.AddMiniProfilerSetup();
 builder.Services.AddSwaggerSetup();
 builder.Services.AddJobSetup();
 //builder.Services.AddJobSetup_HostedService();
@@ -130,6 +130,7 @@ Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
 // 3、配置中间件
 var app = builder.Build();
+
 app.ConfigureApplication();
 app.UseApplicationSetup();
 app.UseResponseBodyRead();
@@ -145,11 +146,11 @@ else
 }
 
 app.UseExceptionHandlerMiddle();
-app.UseIpLimitMiddle();
-app.UseRequestResponseLogMiddle();
-app.UseRecordAccessLogsMiddle();
-app.UseSignalRSendMiddle();
-app.UseIpLogMiddle();
+//app.UseIpLimitMiddle();
+//app.UseRequestResponseLogMiddle();
+//app.UseRecordAccessLogsMiddle();
+//app.UseSignalRSendMiddle();
+//app.UseIpLogMiddle();
 app.UseAllServicesMiddle(builder.Services);
 
 app.UseSession();
@@ -179,7 +180,7 @@ if (builder.Configuration.GetValue<bool>("AppSettings:UseLoadTest"))
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiniProfilerMiddleware();
+//app.UseMiniProfilerMiddleware();
 
 app.UseEndpoints(endpoints =>
 {

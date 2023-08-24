@@ -28,9 +28,9 @@ namespace Blog.Core.Services
             this._unitOfWorkManage = unitOfWorkManage;
             _weChatSubServices = weChatSubServices;
             _weChatKeywordServices = weChatKeywordServices;
-        }  
+        }
         public async Task<MessageModel<WeChatApiDto>> GetToken(string publicAccount)
-        { 
+        {
             var config = await this.QueryById(publicAccount);
             if (config == null) MessageModel<string>.Success($"公众号{publicAccount}未维护至系统");//还没过期,直接返回 
             if (config.tokenExpiration > DateTime.Now)
@@ -47,11 +47,11 @@ namespace Blog.Core.Services
                 config.token = data.access_token;
                 config.tokenExpiration = DateTime.Now.AddSeconds(data.expires_in);
                 await this.Update(config);
-                return MessageModel<WeChatApiDto>.Success("",data);
+                return MessageModel<WeChatApiDto>.Success("", data);
             }
             else
             {
-                return MessageModel<WeChatApiDto>.Fail($"\r\n获取Token失败\r\n错误代码:{data.errcode}\r\n错误信息:{data.errmsg}"); 
+                return MessageModel<WeChatApiDto>.Fail($"\r\n获取Token失败\r\n错误代码:{data.errcode}\r\n错误信息:{data.errmsg}");
             }
         }
         public async Task<MessageModel<WeChatApiDto>> RefreshToken(string publicAccount)
@@ -79,11 +79,11 @@ namespace Blog.Core.Services
             var data = await WeChatHelper.GetTemplate(res.response.access_token);
             if (data.errcode.Equals(0))
             {
-               return MessageModel<WeChatApiDto>.Success("", data); 
+                return MessageModel<WeChatApiDto>.Success("", data);
             }
             else
             {
-               return MessageModel<WeChatApiDto>.Success($"\r\n获取模板失败\r\n错误代码:{data.errcode}\r\n错误信息:{data.errmsg}", data); 
+                return MessageModel<WeChatApiDto>.Success($"\r\n获取模板失败\r\n错误代码:{data.errcode}\r\n错误信息:{data.errmsg}", data);
             }
         }
         /// <summary>
@@ -124,11 +124,11 @@ namespace Blog.Core.Services
                 return MessageModel<WeChatApiDto>.Success($"\r\n获取订阅用户失败\r\n错误代码:{data.errcode}\r\n错误信息:{data.errmsg}", data);
             }
         }
-        public async Task<MessageModel<WeChatApiDto>> GetSubUser(string id,string openid)
+        public async Task<MessageModel<WeChatApiDto>> GetSubUser(string id, string openid)
         {
-            var res = await GetToken(id); 
+            var res = await GetToken(id);
             if (!res.success) return res;
-            var data = await WeChatHelper.GetUserInfo(res.response.access_token,openid);
+            var data = await WeChatHelper.GetUserInfo(res.response.access_token, openid);
             if (data.errcode.Equals(0))
             {
                 return MessageModel<WeChatApiDto>.Success("", data);
@@ -138,33 +138,24 @@ namespace Blog.Core.Services
                 return MessageModel<WeChatApiDto>.Success($"\r\n获取订阅用户失败\r\n错误代码:{data.errcode}\r\n错误信息:{data.errmsg}", data);
             }
         }
-        public async Task<string> Valid(WeChatValidDto validDto,string body)
-        { 
+        public async Task<string> Valid(WeChatValidDto validDto, string body)
+        {
             WeChatXMLDto weChatData = null;
             string objReturn = null;
             try
             {
-               
-                LogHelper.Information("会话开始");
+                //LogHelper.Info("会话开始");
                 if (string.IsNullOrEmpty(validDto.publicAccount)) throw new Exception("没有微信公众号唯一标识id数据");
                 var config = await QueryById(validDto.publicAccount);
                 if (config == null) throw new Exception($"公众号不存在=>{validDto.publicAccount}");
-                LogHelper.Information(JsonHelper.ObjToJson(validDto));
+                LogHelper.Info(JsonHelper.ObjToJson(validDto));
                 var token = config.interactiveToken;//验证用的token 和access_token不一样
                 string[] arrTmp = { token, validDto.timestamp, validDto.nonce };
                 Array.Sort(arrTmp);
                 string combineString = string.Join("", arrTmp);
                 string encryption = MD5Helper.Sha1(combineString).ToLower();
 
-                LogHelper.Information(
-                    $"来自公众号:{validDto.publicAccount}\r\n" +
-                    $"微信signature:{validDto.signature}\r\n" +
-                    $"微信timestamp:{validDto.timestamp}\r\n" +
-                    $"微信nonce:{validDto.nonce}\r\n" +
-                    $"合并字符串:{combineString}\r\n" +
-                    $"微信服务器signature:{validDto.signature}\r\n" +
-                    $"本地服务器signature:{encryption}"
-                );
+
                 if (encryption == validDto.signature)
                 {
                     //判断是首次验证还是交互?
@@ -184,13 +175,22 @@ namespace Blog.Core.Services
                 else
                 {
                     objReturn = "签名验证失败";
+                    LogHelper.Info(
+                        $"来自公众号:{validDto.publicAccount}\r\n" +
+                        $"微信signature:{validDto.signature}\r\n" +
+                        $"微信timestamp:{validDto.timestamp}\r\n" +
+                        $"微信nonce:{validDto.nonce}\r\n" +
+                        $"合并字符串:{combineString}\r\n" +
+                        $"微信服务器signature:{validDto.signature}\r\n" +
+                        $"本地服务器signature:{encryption}"
+                    );
                 }
 
             }
             catch (Exception ex)
             {
-                LogHelper.Information($"会话出错(信息)=>\r\n{ex.Message}");
-                LogHelper.Information($"会话出错(堆栈)=>\r\n{ex.StackTrace}");
+                LogHelper.Info($"会话出错(信息)=>\r\n{ex.Message}");
+                LogHelper.Info($"会话出错(堆栈)=>\r\n{ex.StackTrace}");
                 //返回错误给用户 
                 objReturn = string.Format(@$"<xml><ToUserName><![CDATA[{weChatData?.FromUserName}]]></ToUserName>
                                                     <FromUserName><![CDATA[{weChatData?.ToUserName}]]></FromUserName>
@@ -200,17 +200,17 @@ namespace Blog.Core.Services
             }
             finally
             {
-                LogHelper.Information($"微信get数据=>\r\n{JsonHelper.ObjToJson(validDto)}");
-                LogHelper.Information($"微信post数据=>\r\n{body}");
-                LogHelper.Information($"返回微信数据=>\r\n{objReturn}");
-                LogHelper.Information($"会话结束");
+                //LogHelper.Info($"微信get数据=>\r\n{JsonHelper.ObjToJson(validDto)}");
+                //LogHelper.Info($"微信post数据=>\r\n{body}");
+                //LogHelper.Info($"返回微信数据=>\r\n{objReturn}");
+                //LogHelper.Info($"会话结束");
             }
             return objReturn;
         }
         public async Task<MessageModel<WeChatResponseUserInfo>> GetQRBind(WeChatUserInfo info)
-        { 
+        {
             var res = await GetToken(info?.id);
-            if (!res.success) return MessageModel<WeChatResponseUserInfo>.Fail(res.msg); 
+            if (!res.success) return MessageModel<WeChatResponseUserInfo>.Fail(res.msg);
             var push = new WeChatQRDto
             {
                 expire_seconds = 604800,
@@ -236,23 +236,23 @@ namespace Blog.Core.Services
                 QRcrateTime = DateTime.Now,
                 QRpublicAccount = info.id,
                 QRticket = data.ticket
-            }; 
+            };
             data.id = info.userID;
             await this.BaseDal.Db.Insertable<WeChatQR>(weChatQR).ExecuteCommandAsync();
-            reData.usersData= data;
+            reData.usersData = data;
             return MessageModel<WeChatResponseUserInfo>.Success("获取二维码成功", reData);
         }
-        public async Task<MessageModel<WeChatResponseUserInfo>> PushCardMsg(WeChatCardMsgDataDto msg,string ip)
-        { 
+        public async Task<MessageModel<WeChatResponseUserInfo>> PushCardMsg(WeChatCardMsgDataDto msg, string ip)
+        {
             var bindUser = await BaseDal.Db.Queryable<WeChatSub>().Where(t => t.SubFromPublicAccount == msg.info.id && t.CompanyID == msg.info.companyCode && t.IsUnBind == false && msg.info.userID.Contains(t.SubJobID)).SingleAsync();
             if (bindUser == null)
                 return MessageModel<WeChatResponseUserInfo>.Fail("用户不存在或者已经解绑!");
             var res = await GetToken(msg?.info?.id);
-            if(!res.success)
+            if (!res.success)
                 return MessageModel<WeChatResponseUserInfo>.Fail(res.msg);
             WeChatResponseUserInfo reData = new WeChatResponseUserInfo();
             reData.companyCode = msg.info.companyCode;
-            reData.id = msg.info.id;  
+            reData.id = msg.info.id;
             try
             {
                 var pushData = new WeChatPushCardMsgDto
@@ -262,8 +262,8 @@ namespace Blog.Core.Services
                     touser = bindUser.SubUserOpenID,
                     miniprogram = new WeChatCardMsgMiniprogram
                     {
-                         appid= msg.cardMsg.miniprogram?.appid,
-                         pagepath = msg.cardMsg.miniprogram?.pagepath
+                        appid = msg.cardMsg.miniprogram?.appid,
+                        pagepath = msg.cardMsg.miniprogram?.pagepath
                     },
                     data = new WeChatPushCardMsgDetailDto
                     {
@@ -329,7 +329,7 @@ namespace Blog.Core.Services
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.Information($"记录失败\r\n{ex.Message}\r\n{ex.StackTrace}");
+                    LogHelper.Info($"记录失败\r\n{ex.Message}\r\n{ex.StackTrace}");
                 }
                 if (reData.usersData.errcode.Equals(0))
                 {
@@ -339,22 +339,23 @@ namespace Blog.Core.Services
                 {
                     return MessageModel<WeChatResponseUserInfo>.Success("卡片消息推送失败", reData);
                 }
-                
+
             }
             catch (Exception ex)
-            { 
-                return MessageModel<WeChatResponseUserInfo>.Success($"卡片消息推送错误=>{ex.Message}", reData); 
+            {
+                return MessageModel<WeChatResponseUserInfo>.Success($"卡片消息推送错误=>{ex.Message}", reData);
             }
 
-            
+
         }
 
-        public async Task<MessageModel<WeChatApiDto>> PushTxtMsg(WeChatPushTestDto msg) {
+        public async Task<MessageModel<WeChatApiDto>> PushTxtMsg(WeChatPushTestDto msg)
+        {
             var res = await GetToken(msg.selectWeChat);
             if (!res.success) return res;
             var token = res.response.access_token;
             if (msg.selectBindOrSub.Equals("sub"))
-            { 
+            {
                 return await PushText(token, msg);
             }
             else
@@ -394,9 +395,10 @@ namespace Blog.Core.Services
                 }
                 return messageModel;
             }
-            
+
         }
-        public async Task<MessageModel<WeChatApiDto>> PushText(string token,WeChatPushTestDto msg) {
+        public async Task<MessageModel<WeChatApiDto>> PushText(string token, WeChatPushTestDto msg)
+        {
 
             object data = null; ;
             WeChatApiDto pushres = null; ;
@@ -535,16 +537,16 @@ namespace Blog.Core.Services
                 return MessageModel<WeChatApiDto>.Success("更新成功", data);
             }
             else
-            { 
+            {
                 return MessageModel<WeChatApiDto>.Success("更新失败", data);
             }
         }
         public async Task<MessageModel<WeChatResponseUserInfo>> GetBindUserInfo(WeChatUserInfo info)
         {
-            var bindUser = await BaseDal.Db.Queryable<WeChatSub>().Where(t => t.SubFromPublicAccount == info.id && t.CompanyID == info.companyCode && info.userID.Equals(t.SubJobID) && t.IsUnBind == false ).FirstAsync();
+            var bindUser = await BaseDal.Db.Queryable<WeChatSub>().Where(t => t.SubFromPublicAccount == info.id && t.CompanyID == info.companyCode && info.userID.Equals(t.SubJobID) && t.IsUnBind == false).FirstAsync();
             if (bindUser == null) return MessageModel<WeChatResponseUserInfo>.Fail("用户不存在或者已经解绑!");
             var res = await GetToken(info.id);
-            if(!res.success) return MessageModel<WeChatResponseUserInfo>.Fail(res.msg);
+            if (!res.success) return MessageModel<WeChatResponseUserInfo>.Fail(res.msg);
             var token = res.response.access_token;
             WeChatResponseUserInfo reData = new WeChatResponseUserInfo();
             reData.companyCode = info.companyCode;
@@ -558,18 +560,18 @@ namespace Blog.Core.Services
             else
             {
                 return MessageModel<WeChatResponseUserInfo>.Fail("用户信息获取失败", reData);
-            } 
+            }
         }
         public async Task<MessageModel<WeChatResponseUserInfo>> UnBind(WeChatUserInfo info)
-        { 
-            var bindUser = await BaseDal.Db.Queryable<WeChatSub>().Where(t => t.SubFromPublicAccount == info.id && t.CompanyID == info.companyCode && info.userID.Equals(t.SubJobID) && t.IsUnBind == false ).FirstAsync();
+        {
+            var bindUser = await BaseDal.Db.Queryable<WeChatSub>().Where(t => t.SubFromPublicAccount == info.id && t.CompanyID == info.companyCode && info.userID.Equals(t.SubJobID) && t.IsUnBind == false).FirstAsync();
             if (bindUser == null) return MessageModel<WeChatResponseUserInfo>.Fail("用户不存在或者已经解绑!");
             WeChatResponseUserInfo reData = new WeChatResponseUserInfo();
             reData.companyCode = info.companyCode;
             reData.id = info.id;
             bindUser.IsUnBind = true;
             bindUser.SubUserRefTime = DateTime.Now;
-            await BaseDal.Db.Updateable<WeChatSub>(bindUser).UpdateColumns(t=> new{ t.IsUnBind,t.SubUserRefTime}).ExecuteCommandAsync();
+            await BaseDal.Db.Updateable<WeChatSub>(bindUser).UpdateColumns(t => new { t.IsUnBind, t.SubUserRefTime }).ExecuteCommandAsync();
             return MessageModel<WeChatResponseUserInfo>.Success("用户解绑成功", reData);
         }
 
@@ -615,7 +617,7 @@ namespace Blog.Core.Services
 
         }
 
-        private async Task<string> HandleKeyword(WeChatXMLDto weChat,bool isEvent =false)
+        private async Task<string> HandleKeyword(WeChatXMLDto weChat, bool isEvent = false)
         {
             var key = (isEvent ? weChat.EventKey : weChat.Content.ObjToString().Trim());
             var findKey = (await _weChatKeywordServices.Query(t => t.publicAccount.Equals(weChat.publicAccount) && t.key.Equals(key))).FirstOrDefault();
@@ -890,14 +892,14 @@ namespace Blog.Core.Services
         {
             return await Task.Run(async () =>
             {
-                var data =await _weChatSubServices.Query(t => t.SubFromPublicAccount == weChat.publicAccount && t.SubUserOpenID == weChat.FromUserName && t.IsUnBind == false);
+                var data = await _weChatSubServices.Query(t => t.SubFromPublicAccount == weChat.publicAccount && t.SubUserOpenID == weChat.FromUserName && t.IsUnBind == false);
                 foreach (var item in data)
                 {
                     item.IsUnBind = true;
                     item.SubUserRefTime = DateTime.Now;
                 }
                 await BaseDal.Db.Updateable<WeChatSub>(data).UpdateColumns(t => new { t.IsUnBind, t.SubUserRefTime }).ExecuteCommandAsync();
-                LogHelper.Information($"用户解绑成功:{weChat.publicAccount}=>{weChat.FromUserName}");
+                LogHelper.Info($"用户解绑成功:{weChat.publicAccount}=>{weChat.FromUserName}");
                 return @$"<xml><ToUserName><![CDATA[{weChat.FromUserName}]]></ToUserName>
                                 <FromUserName><![CDATA[{weChat.ToUserName}]]></FromUserName>
                                 <CreateTime>{DateTime.Now.Ticks.ToString()}</CreateTime>
@@ -937,7 +939,7 @@ namespace Blog.Core.Services
         /// <returns></returns>
 
         private async Task<string> QRBind(WeChatXMLDto weChat)
-        {  
+        {
             var ticket = await BaseDal.Db.Queryable<WeChatQR>().InSingleAsync(weChat.Ticket);
             if (ticket == null) throw new Exception("ticket未找到");
             if (ticket.QRisUsed) throw new Exception("ticket已被使用");
@@ -945,7 +947,7 @@ namespace Blog.Core.Services
 
             var bindUser = await BaseDal.Db.Queryable<WeChatSub>().Where(t => t.SubFromPublicAccount == ticket.QRpublicAccount && t.CompanyID == ticket.QRbindCompanyID && t.SubJobID == ticket.QRbindJobID).SingleAsync();
             bool isNewBind;
-            if (bindUser == null )
+            if (bindUser == null)
             {
                 isNewBind = true;
                 bindUser = new WeChatSub
@@ -1018,7 +1020,7 @@ namespace Blog.Core.Services
         /// <returns></returns>
         private async Task<string> EventCLICK(WeChatXMLDto weChat)
         {
-            return await HandleKeyword(weChat,true);
+            return await HandleKeyword(weChat, true);
         }
         /// <summary>
         /// 点击菜单网址事件

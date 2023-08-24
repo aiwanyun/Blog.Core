@@ -21,7 +21,7 @@ namespace Blog.Core.Common.Helper
             }
             catch (Exception e)
             {
-                LogHelper.Information("get请求失败", e);
+                LogHelper.Info("get请求失败", e);
             }
             return null;
         }
@@ -46,7 +46,7 @@ namespace Blog.Core.Common.Helper
             }
             catch (Exception e)
             {
-                LogHelper.Information("post请求失败", e);
+                LogHelper.Info("post请求失败", e);
             }
             return null;
         }
