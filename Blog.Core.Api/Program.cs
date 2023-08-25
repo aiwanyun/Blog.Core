@@ -49,7 +49,7 @@ builder.ConfigureApplication();
 builder.Services.AddSingleton(new AppSettings(builder.Configuration));
 builder.Services.AddAllOptionRegister();
 
-builder.Services.AddUiFilesZipSetup(builder.Environment);
+//builder.Services.AddUiFilesZipSetup(builder.Environment);
 
 Permissions.IsUseIds4 = AppSettings.app(new string[] { "Startup", "IdentityServer4", "Enabled" }).ObjToBool();
 Permissions.IsUseAuthing = AppSettings.app(new string[] { "Startup", "Authing", "Enabled" }).ObjToBool();
@@ -72,11 +72,11 @@ builder.Services.AddJobSetup();
 builder.Services.AddHttpContextSetup();
 builder.Services.AddAppTableConfigSetup(builder.Environment);
 builder.Services.AddHttpApi();
-builder.Services.AddRedisInitMqSetup();
-builder.Services.AddRabbitMQSetup();
-builder.Services.AddKafkaSetup(builder.Configuration);
-builder.Services.AddEventBusSetup();
-builder.Services.AddNacosSetup(builder.Configuration);
+//builder.Services.AddRedisInitMqSetup();
+//builder.Services.AddRabbitMQSetup();
+//builder.Services.AddKafkaSetup(builder.Configuration);
+//builder.Services.AddEventBusSetup();
+//builder.Services.AddNacosSetup(builder.Configuration);
 builder.Services.AddInitializationHostServiceSetup();
 builder.Services.AddAuthorizationSetup();
 if (Permissions.IsUseIds4 || Permissions.IsUseAuthing)
@@ -90,8 +90,8 @@ else
 }
 
 builder.Services.AddIpPolicyRateLimitSetup(builder.Configuration);
-builder.Services.AddSignalR().AddNewtonsoftJsonProtocol();
-builder.Services.AddScoped<UseServiceDIAttribute>();
+//builder.Services.AddSignalR().AddNewtonsoftJsonProtocol();
+//builder.Services.AddScoped<UseServiceDIAttribute>();
 builder.Services.Configure<KestrelServerOptions>(x => x.AllowSynchronousIO = true)
     .Configure<IISServerOptions>(x => x.AllowSynchronousIO = true);
 
@@ -133,7 +133,7 @@ var app = builder.Build();
 
 app.ConfigureApplication();
 app.UseApplicationSetup();
-app.UseResponseBodyRead();
+//app.UseResponseBodyRead();
 
 if (app.Environment.IsDevelopment())
 {
@@ -188,7 +188,7 @@ app.UseEndpoints(endpoints =>
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}");
 
-    endpoints.MapHub<ChatHub>("/api2/chatHub");
+    //endpoints.MapHub<ChatHub>("/api2/chatHub");
 });
 
 // 4、运行

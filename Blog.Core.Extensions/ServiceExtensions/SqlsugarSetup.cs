@@ -81,10 +81,10 @@ namespace Blog.Core.Extensions
 				BaseDBConfig.AllConfigs.Add(config);
 			});
 
-			if (BaseDBConfig.LogConfig is null)
-			{
-				throw new ApplicationException("未配置Log库连接");
-			}
+			//if (BaseDBConfig.LogConfig is null)
+			//{
+			//	throw new ApplicationException("未配置Log库连接");
+			//}
 			
 			// SqlSugarScope是线程安全，可使用单例注入
 			// 参考：https://www.donet5.com/Home/Doc?typeId=1181

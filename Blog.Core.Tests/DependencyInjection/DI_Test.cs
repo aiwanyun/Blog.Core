@@ -56,7 +56,7 @@ namespace Blog.Core.Tests
             var basePath = AppContext.BaseDirectory;
 
             IServiceCollection services = new ServiceCollection();
-            services.AddAutoMapper(typeof(Startup));
+            //services.AddAutoMapper(typeof(Startup));
 
             services.AddSingleton(new AppSettings(basePath));
             services.AddScoped<DBSeed>();
@@ -115,10 +115,10 @@ namespace Blog.Core.Tests
             builder.RegisterGeneric(typeof(MongoBaseRepository<>)).As(typeof(IMongoBaseRepository<>)).InstancePerDependency(); //注册仓储
 
             // 属性注入
-            var controllerBaseType = typeof(ControllerBase);
-            builder.RegisterAssemblyTypes(typeof(Startup).Assembly)
-                .Where(t => controllerBaseType.IsAssignableFrom(t) && t != controllerBaseType)
-                .PropertiesAutowired();
+            //var controllerBaseType = typeof(ControllerBase);
+            //builder.RegisterAssemblyTypes(typeof(Startup).Assembly)
+            //    .Where(t => controllerBaseType.IsAssignableFrom(t) && t != controllerBaseType)
+            //    .PropertiesAutowired();
 
             var servicesDllFile = Path.Combine(basePath, "Blog.Core.Services.dll");
             var assemblysServices = Assembly.LoadFrom(servicesDllFile);

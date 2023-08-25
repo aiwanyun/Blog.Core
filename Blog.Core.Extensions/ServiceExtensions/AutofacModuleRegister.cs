@@ -42,47 +42,45 @@ namespace Blog.Core.Extensions
             var cacheType = new List<Type>();
             if (AppSettings.app(new string[] { "AppSettings", "CachingAOP", "Enabled" }).ObjToBool())
             {
-                builder.RegisterType<BlogCacheAOP>();
+                builder.RegisterType<BlogCacheAOP>().InstancePerDependency();
                 cacheType.Add(typeof(BlogCacheAOP));
             }
 
             if (AppSettings.app(new string[] { "AppSettings", "TranAOP", "Enabled" }).ObjToBool())
             {
-                builder.RegisterType<BlogTranAOP>();
+                builder.RegisterType<BlogTranAOP>().InstancePerDependency();
                 cacheType.Add(typeof(BlogTranAOP));
             }
 
             if (AppSettings.app(new string[] { "AppSettings", "LogAOP", "Enabled" }).ObjToBool())
             {
-                builder.RegisterType<BlogLogAOP>();
+                builder.RegisterType<BlogLogAOP>().InstancePerDependency();
                 cacheType.Add(typeof(BlogLogAOP));
             }
 
-            builder.RegisterGeneric(typeof(BaseRepository<>)).As(typeof(IBaseRepository<>)).InstancePerLifetimeScope().InstancePerDependency(); //注册仓储
-            builder.RegisterGeneric(typeof(BaseServices<>)).As(typeof(IBaseServices<>)).InstancePerLifetimeScope().InstancePerDependency();     //注册服务
+            builder.RegisterGeneric(typeof(BaseRepository<>)).As(typeof(IBaseRepository<>)).InstancePerDependency(); //注册仓储
+            builder.RegisterGeneric(typeof(BaseServices<>)).As(typeof(IBaseServices<>)).InstancePerDependency();     //注册服务
 
             // 获取 Service.dll 程序集服务，并注册
             var assemblysServices = Assembly.LoadFrom(servicesDllFile);
             builder.RegisterAssemblyTypes(assemblysServices)
                 .AsImplementedInterfaces()
-                .InstancePerDependency()
-                .InstancePerLifetimeScope()
                 .PropertiesAutowired()
                 .EnableInterfaceInterceptors()       //引用Autofac.Extras.DynamicProxy;
-                .InterceptedBy(cacheType.ToArray()); //允许将拦截器服务的列表分配给注册。
+                .InterceptedBy(cacheType.ToArray()) //允许将拦截器服务的列表分配给注册。
+                .InstancePerDependency(); 
 
             // 获取 Repository.dll 程序集服务，并注册
             var assemblysRepository = Assembly.LoadFrom(repositoryDllFile);
             builder.RegisterAssemblyTypes(assemblysRepository)
                 .AsImplementedInterfaces()
                 .PropertiesAutowired()
-                .InstancePerLifetimeScope()
                 .InstancePerDependency();
 
             builder.RegisterType<UnitOfWorkManage>().As<IUnitOfWorkManage>()
                 .AsImplementedInterfaces()
-                .InstancePerLifetimeScope()
-                .PropertiesAutowired();
+                .PropertiesAutowired()
+                .InstancePerDependency();
 
             #endregion
 
@@ -99,9 +97,9 @@ namespace Blog.Core.Extensions
 
             //只能注入该类中的虚方法，且必须是public
             //这里仅仅是一个单独类无接口测试，不用过多追问
-            builder.RegisterAssemblyTypes(Assembly.GetAssembly(typeof(Love)))
-                .EnableClassInterceptors()
-                .InterceptedBy(cacheType.ToArray());
+            //builder.RegisterAssemblyTypes(Assembly.GetAssembly(typeof(Love)))
+            //    .EnableClassInterceptors()
+            //    .InterceptedBy(cacheType.ToArray());
 
             #endregion
 

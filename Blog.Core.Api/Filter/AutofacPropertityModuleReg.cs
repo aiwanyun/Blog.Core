@@ -10,7 +10,7 @@ namespace Blog.Core.Extensions
             var controllerBaseType = typeof(ControllerBase);
             builder.RegisterAssemblyTypes(typeof(Program).Assembly)
                 .Where(t => controllerBaseType.IsAssignableFrom(t) && t != controllerBaseType)
-                .InstancePerLifetimeScope()
+                .InstancePerDependency()
                 .PropertiesAutowired();
 
         }

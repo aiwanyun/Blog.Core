@@ -18,7 +18,7 @@ public static class ApplicationSetup
             App.IsRun = false;
 
             //清除日志
-            Log.CloseAndFlush();
+            //Log.CloseAndFlush();
         });
     }
 }

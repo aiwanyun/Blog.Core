@@ -16,14 +16,12 @@ namespace Blog.Core.Filter
     public class GlobalExceptionsFilter : IExceptionFilter
     {
         private readonly IWebHostEnvironment _env;
-        private readonly IHubContext<ChatHub> _hubContext;
         private readonly ILogger<GlobalExceptionsFilter> _loggerHelper;
 
-        public GlobalExceptionsFilter(IWebHostEnvironment env, ILogger<GlobalExceptionsFilter> loggerHelper, IHubContext<ChatHub> hubContext)
+        public GlobalExceptionsFilter(IWebHostEnvironment env, ILogger<GlobalExceptionsFilter> loggerHelper)
         {
             _env = env;
             _loggerHelper = loggerHelper;
-            _hubContext = hubContext;
         }
 
         public void OnException(ExceptionContext context)
@@ -52,10 +50,10 @@ namespace Blog.Core.Filter
 
             //进行错误日志记录
             _loggerHelper.LogError(json.msg + WriteLog(json.msg, context.Exception));
-            if (AppSettings.app(new string[] { "Middleware", "SignalRSendLog", "Enabled" }).ObjToBool())
-            {
-                _hubContext.Clients.All.SendAsync("ReceiveUpdate", LogLock.GetLogData()).Wait();
-            }
+            //if (AppSettings.app(new string[] { "Middleware", "SignalRSendLog", "Enabled" }).ObjToBool())
+            //{
+            //    _hubContext.Clients.All.SendAsync("ReceiveUpdate", LogLock.GetLogData()).Wait();
+            //}
 
 
         }
