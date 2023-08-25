@@ -21,14 +21,12 @@ namespace Blog.Core.Controllers
     [AllowAnonymous]
     public class MonitorController : BaseApiController
     {
-        private readonly IHubContext<ChatHub> _hubContext;
         private readonly IWebHostEnvironment _env;
         private readonly IApplicationUserServices _applicationUserServices;
         private readonly ILogger<MonitorController> _logger;
 
-        public MonitorController(IHubContext<ChatHub> hubContext, IWebHostEnvironment env, IApplicationUserServices applicationUserServices, ILogger<MonitorController> logger)
+        public MonitorController(IWebHostEnvironment env, IApplicationUserServices applicationUserServices, ILogger<MonitorController> logger)
         {
-            _hubContext = hubContext;
             _env = env;
             _applicationUserServices = applicationUserServices;
             _logger = logger;
@@ -59,15 +57,15 @@ namespace Blog.Core.Controllers
         /// </summary>
         /// <returns></returns>
         // GET: api/Logs
-        [HttpGet]
-        public MessageModel<List<LogInfo>> Get()
-        {
-            if (AppSettings.app(new string[] { "Middleware", "SignalRSendLog", "Enabled" }).ObjToBool())
-            {
-                _hubContext.Clients.All.SendAsync("ReceiveUpdate", LogLock.GetLogData()).Wait();
-            }
-            return Success<List<LogInfo>>(null, "执行成功");
-        }
+        //[HttpGet]
+        //public MessageModel<List<LogInfo>> Get()
+        //{
+        //    if (AppSettings.app(new string[] { "Middleware", "SignalRSendLog", "Enabled" }).ObjToBool())
+        //    {
+        //        _hubContext.Clients.All.SendAsync("ReceiveUpdate", LogLock.GetLogData()).Wait();
+        //    }
+        //    return Success<List<LogInfo>>(null, "执行成功");
+        //}
 
 
 
