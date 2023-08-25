@@ -97,16 +97,11 @@ namespace Blog.Core.Controllers
         [HttpGet]
         public async Task<string> Valid([FromQuery] WeChatValidDto validDto)
         {
-            var bodyStr = "";
-            // 启用倒带功能，就可以让 Request.Body 可以再次读取
-            Request.Body.Seek(0, SeekOrigin.Begin);
-            using (StreamReader reader
-                   = new StreamReader(Request.Body, Encoding.UTF8, true, 1024, true))
+            var bodyStr = string.Empty;
+            using (var reader = new StreamReader(Request.Body))
             {
-                bodyStr = reader.ReadToEnd();
+                bodyStr = await reader.ReadToEndAsync();
             }
-
-            Request.Body.Position = 0; 
             return await _weChatConfigServices.Valid(validDto, bodyStr);
         }
         /// <summary>
