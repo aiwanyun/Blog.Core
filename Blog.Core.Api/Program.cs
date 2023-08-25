@@ -62,7 +62,11 @@ builder.Services.AddSqlsugarSetup();
 builder.Services.AddDbSetup();
 
 //builder.Host.AddSerilogSetup();
+
+builder.Logging.ClearProviders();
 builder.Host.SetLog4Net();
+//builder.Logging.AddLog4Net();
+
 builder.Services.AddAutoMapperSetup();
 builder.Services.AddCorsSetup();
 //builder.Services.AddMiniProfilerSetup();
