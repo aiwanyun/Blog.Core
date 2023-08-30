@@ -297,7 +297,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Blog.Core.Controllers.MonitorController.Get">
+        <member name="M:Blog.Core.Controllers.MonitorController.GetRequestApiinfoByWeek">
             <summary>
             SignalR send data
             </summary>

@@ -58,7 +58,7 @@ namespace Blog.Core.Extensions
 					// 自定义特性
 					ConfigureExternalServices = new ConfigureExternalServices()
 					{
-						DataInfoCacheService = new SqlSugarCacheService(),
+						//DataInfoCacheService = new SqlSugarCacheService(),
 						EntityService = (property, column) =>
 						{
 							if (column.IsPrimarykey && property.PropertyType == typeof(int))
