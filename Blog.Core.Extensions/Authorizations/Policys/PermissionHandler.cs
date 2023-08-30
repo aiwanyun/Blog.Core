@@ -139,7 +139,7 @@ namespace Blog.Core.AuthHelper
                         if (!Permissions.IsUseIds4)
                         {
                             //校验用户
-                            user = await _userServices.QueryById(_user.ID, true);
+                            user = await _userServices.QueryById(_user.ID);
                             if (user == null)
                             {
                                 _user.MessageModel = new ApiResponse(StatusCode.CODE401, "用户不存在或已被删除").MessageModel;

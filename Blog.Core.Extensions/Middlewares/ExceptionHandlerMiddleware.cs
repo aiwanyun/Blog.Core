@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Blog.Core.Common.Helper;
 using Blog.Core.Model;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -24,6 +25,7 @@ namespace Blog.Core.Extensions.Middlewares
             }
             catch (Exception ex)
             {
+                LogHelper.logSys.Error(ex);
                 await HandleExceptionAsync(context, ex);
             }
         }
