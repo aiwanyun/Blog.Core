@@ -12,10 +12,10 @@ public class LogBatchingSink : IBatchedLogEventSink
 {
     public async Task EmitBatchAsync(IEnumerable<LogEvent> batch)
     {
-        var sugar = App.GetService<ISqlSugarClient>(false);
+        //var sugar = App.GetService<ISqlSugarClient>(false);
 
-        await WriteSqlLog(sugar, batch.FilterSqlLog());
-        await WriteLogs(sugar, batch.FilterRemoveOtherLog());
+        //await WriteSqlLog(sugar, batch.FilterSqlLog());
+        //await WriteLogs(sugar, batch.FilterRemoveOtherLog());
     }
 
     public Task OnEmptyBatchAsync()

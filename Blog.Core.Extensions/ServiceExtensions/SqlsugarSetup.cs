@@ -106,7 +106,7 @@ namespace Blog.Core.Extensions
 						// 配置实体假删除过滤器
 						RepositorySetting.SetDeletedEntityFilter(dbProvider);
 						// 配置实体数据权限
-						RepositorySetting.SetTenantEntityFilter(dbProvider);
+						//RepositorySetting.SetTenantEntityFilter(dbProvider);
 					});
 				});
 			});

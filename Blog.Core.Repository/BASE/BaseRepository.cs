@@ -1,5 +1,6 @@
 ﻿using Blog.Core.Common;
 using Blog.Core.Common.DB;
+using Blog.Core.Common.HttpContextUser;
 using Blog.Core.IRepository.Base;
 using Blog.Core.Model;
 using Blog.Core.Model.Models;
@@ -20,6 +21,8 @@ namespace Blog.Core.Repository.Base
     {
         private readonly IUnitOfWorkManage _unitOfWorkManage;
         private readonly SqlSugarScope _dbBase;
+        private readonly IUser _user;
+        private IUnitOfWorkManage unitOfWorkManage;
 
         private ISqlSugarClient _db
         {
@@ -49,9 +52,9 @@ namespace Blog.Core.Repository.Base
                 if (mta is { TenantType: TenantTypeEnum.Db })
                 {
                     //获取租户信息 租户信息可以提前缓存下来 
-                    if (App.User is { TenantId: > 0 })
+                    if (_user is { TenantId: > 0 })
                     {
-                        var tenant = db.Queryable<SysTenant>().WithCache().Where(s => s.Id == App.User.TenantId).First();
+                        var tenant = db.Queryable<SysTenant>().WithCache().Where(s => s.Id == _user.TenantId).First();
                         if (tenant != null)
                         {
                             var iTenant = db.AsTenant();
@@ -71,12 +74,12 @@ namespace Blog.Core.Repository.Base
 
         public ISqlSugarClient Db => _db;
 
-        public BaseRepository(IUnitOfWorkManage unitOfWorkManage)
+        public BaseRepository(IUnitOfWorkManage unitOfWorkManage,IUser user)
         {
+            _user = user;
             _unitOfWorkManage = unitOfWorkManage;
             _dbBase = unitOfWorkManage.GetDbClient();
         }
-
 
         public async Task<TEntity> QueryById(object objId)
         {

@@ -62,32 +62,32 @@ public static class SqlSugarAop
             }
 
 
-            if (App.User?.ID > 0)
-            {
-                if (baseEntity is ITenantEntity tenant && App.User.TenantId > 0)
-                {
-                    if (tenant.TenantId == 0)
-                    {
-                        tenant.TenantId = App.User.TenantId;
-                    }
-                }
+            //if (App.User?.ID > 0)
+            //{
+            //    if (baseEntity is ITenantEntity tenant && App.User.TenantId > 0)
+            //    {
+            //        if (tenant.TenantId == 0)
+            //        {
+            //            tenant.TenantId = App.User.TenantId;
+            //        }
+            //    }
 
-                switch (entityInfo.OperationType)
-                {
-                    case DataFilterType.UpdateByObject:
-                        baseEntity.ModifyId = App.User.ID;
-                        baseEntity.ModifyBy = App.User.Name;
-                        break;
-                    case DataFilterType.InsertByObject:
-                        if (baseEntity.CreateBy.IsNullOrEmpty() || baseEntity.CreateId is null or <= 0)
-                        {
-                            baseEntity.CreateId = App.User.ID;
-                            baseEntity.CreateBy = App.User.Name;
-                        }
+            //    switch (entityInfo.OperationType)
+            //    {
+            //        case DataFilterType.UpdateByObject:
+            //            baseEntity.ModifyId = App.User.ID;
+            //            baseEntity.ModifyBy = App.User.Name;
+            //            break;
+            //        case DataFilterType.InsertByObject:
+            //            if (baseEntity.CreateBy.IsNullOrEmpty() || baseEntity.CreateId is null or <= 0)
+            //            {
+            //                baseEntity.CreateId = App.User.ID;
+            //                baseEntity.CreateBy = App.User.Name;
+            //            }
 
-                        break;
-                }
-            }
+            //            break;
+            //    }
+            //}
         }
         else
         {
@@ -97,40 +97,40 @@ public static class SqlSugarAop
             //要么考虑老的表没必要兼容老的表
             //
 
-            var getType = entityInfo.EntityValue.GetType();
+            //var getType = entityInfo.EntityValue.GetType();
 
-            switch (entityInfo.OperationType)
-            {
-                case DataFilterType.InsertByObject:
-                    var dyCreateBy = getType.GetProperty("CreateBy");
-                    var dyCreateId = getType.GetProperty("CreateId");
-                    var dyCreateTime = getType.GetProperty("CreateTime");
+            //switch (entityInfo.OperationType)
+            //{
+            //    case DataFilterType.InsertByObject:
+            //        var dyCreateBy = getType.GetProperty("CreateBy");
+            //        var dyCreateId = getType.GetProperty("CreateId");
+            //        var dyCreateTime = getType.GetProperty("CreateTime");
 
-                    if (App.User?.ID > 0 && dyCreateBy != null && dyCreateBy.GetValue(entityInfo.EntityValue) == null)
-                        dyCreateBy.SetValue(entityInfo.EntityValue, App.User.Name);
+            //        if (App.User?.ID > 0 && dyCreateBy != null && dyCreateBy.GetValue(entityInfo.EntityValue) == null)
+            //            dyCreateBy.SetValue(entityInfo.EntityValue, App.User.Name);
 
-                    if (App.User?.ID > 0 && dyCreateId != null && dyCreateId.GetValue(entityInfo.EntityValue) == null)
-                        dyCreateId.SetValue(entityInfo.EntityValue, App.User.ID);
+            //        if (App.User?.ID > 0 && dyCreateId != null && dyCreateId.GetValue(entityInfo.EntityValue) == null)
+            //            dyCreateId.SetValue(entityInfo.EntityValue, App.User.ID);
 
-                    if (dyCreateTime != null && dyCreateTime.GetValue(entityInfo.EntityValue) != null && (DateTime)dyCreateTime.GetValue(entityInfo.EntityValue) == DateTime.MinValue)
-                        dyCreateTime.SetValue(entityInfo.EntityValue, DateTime.Now);
+            //        if (dyCreateTime != null && dyCreateTime.GetValue(entityInfo.EntityValue) != null && (DateTime)dyCreateTime.GetValue(entityInfo.EntityValue) == DateTime.MinValue)
+            //            dyCreateTime.SetValue(entityInfo.EntityValue, DateTime.Now);
 
-                    break;
-                case DataFilterType.UpdateByObject:
-                    var dyModifyBy = getType.GetProperty("ModifyBy");
-                    var dyModifyId = getType.GetProperty("ModifyId");
-                    var dyModifyTime = getType.GetProperty("ModifyTime");
+            //        break;
+            //    case DataFilterType.UpdateByObject:
+            //        var dyModifyBy = getType.GetProperty("ModifyBy");
+            //        var dyModifyId = getType.GetProperty("ModifyId");
+            //        var dyModifyTime = getType.GetProperty("ModifyTime");
 
-                    if (App.User?.ID > 0 && dyModifyBy != null)
-                        dyModifyBy.SetValue(entityInfo.EntityValue, App.User.Name);
+            //        if (App.User?.ID > 0 && dyModifyBy != null)
+            //            dyModifyBy.SetValue(entityInfo.EntityValue, App.User.Name);
 
-                    if (App.User?.ID > 0 && dyModifyId != null)
-                        dyModifyId.SetValue(entityInfo.EntityValue, App.User.ID);
+            //        if (App.User?.ID > 0 && dyModifyId != null)
+            //            dyModifyId.SetValue(entityInfo.EntityValue, App.User.ID);
 
-                    if (dyModifyTime != null)
-                        dyModifyTime.SetValue(entityInfo.EntityValue, DateTime.Now);
-                    break;
-            }
+            //        if (dyModifyTime != null)
+            //            dyModifyTime.SetValue(entityInfo.EntityValue, DateTime.Now);
+            //        break;
+            //}
         }
     }
 

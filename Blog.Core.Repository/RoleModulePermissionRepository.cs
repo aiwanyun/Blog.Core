@@ -5,6 +5,7 @@ using SqlSugar;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blog.Core.Repository.UnitOfWorks;
+using Blog.Core.Common.HttpContextUser;
 
 namespace Blog.Core.Repository
 {
@@ -13,7 +14,7 @@ namespace Blog.Core.Repository
     /// </summary>	
     public class RoleModulePermissionRepository : BaseRepository<RoleModulePermission>, IRoleModulePermissionRepository
     {
-        public RoleModulePermissionRepository(IUnitOfWorkManage unitOfWorkManage) : base(unitOfWorkManage)
+        public RoleModulePermissionRepository(IUnitOfWorkManage unitOfWorkManage,IUser user) : base(unitOfWorkManage,user)
         {
         }
 
